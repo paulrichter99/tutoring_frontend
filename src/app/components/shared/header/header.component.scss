@@ -1,0 +1,187 @@
+@import "/src/app/components/shared/variables.scss";
+
+header {
+  background-color: $base-color-bg; /* Lighter background color */
+  color: $base-color; /* Text color */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 1px;
+  height: 120px;
+  overflow: visible;
+}
+
+.nav-dropdown {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-dropdown-btn{
+  display: none;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.nav-tabs {
+  list-style: none;
+  padding: 0;
+  display: flex;
+}
+
+.nav-item {
+  margin: 0 15px;
+  width: 33%;
+}
+
+.nav-item a {
+  text-decoration: none;
+  color: #f5f6fa; /* Tab text color */
+  font-weight: 600;
+}
+
+.nav-item a.active {
+  color: $color-active-tab; /* Active tab text color */
+  font-weight: 600;
+}
+
+.logo {
+  width: 130px;
+}
+
+.logo img {
+  width: 80px; /* Adjust the logo size as needed */
+}
+
+.user-actions {
+  justify-self: end;
+}
+
+.login-button {
+  background-color: #474f61; /* Button background color */
+  color: #fff;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  border-radius: 10px;
+  min-width: 130px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.user-actions .login-button:hover {
+  background-color: #f5f6fa; /* Button background color on hover */
+}
+
+.fixed-dropdown-content, .fixed-nav-bg{
+  display: none;
+}
+
+
+@media (max-width: 750px){
+  .nav-dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 0;
+  }
+
+  .nav-dropdown-btn{
+    display: block;
+    border: none;
+    background-color: transparent;
+    height: 100%;
+    color: $base-color;
+    font-size: 25px;
+    margin-right: 10px;
+  }
+
+  .nav-content {
+    display: none;
+  }
+
+  .login-button {
+    display: none;
+  }
+
+  .fixed-nav-bg {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0.6;
+    background-color: $base-color-bg-secondary;
+  }
+
+  .fixed-dropdown-content{
+    display: block;
+    background-color: $base-color-bg-secondary;
+    position: fixed;
+    top: 100vh;
+    left: 0;
+    height: calc(100vh - 200px);
+    width: 100%;
+    z-index: 100;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding-top: 30px;
+    user-select: none;
+
+    transition: top 0.3s;
+
+    .bar{
+      width: 40px;
+      height: 5px;
+      border-radius: 5px;
+      background-color: $base-color;
+      margin: 0 auto;
+      margin-top: -5px;
+      margin-bottom: 20px;
+    }
+
+    .nav-tabs {
+      flex-direction: column;
+      margin: 0;
+
+      .nav-item {
+        height: 60px;
+        width: 100%;
+        background-color: $base-color-bg-secondary;
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+        margin: 0;
+
+        i {
+          min-width: 45px;
+        }
+
+        a {
+          font-weight: 300;
+        }
+      }
+    }
+
+    .fixed-login-button{
+      color: $base-color;
+      background-color: $base-color-bg;
+      background-color: transparent;
+      font: inherit;
+      font-weight: 300;
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

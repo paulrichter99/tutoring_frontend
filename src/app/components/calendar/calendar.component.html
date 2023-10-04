@@ -1,0 +1,47 @@
+<div class="calendar-wrapper">
+  <div class="calendar-actions">
+    <ul>
+      <li> <i class="fa-regular fa-calendar-days active"></i> </li>
+      <li> <i class="fa-solid fa-calendar-week"></i> </li>
+      <li> <i class="fa-regular fa-calendar"></i> </li>
+    </ul>
+    <button> <i class="fa-regular fa-calendar-check"></i> </button>
+  </div>
+  <div class="calendar">
+    <div class="calendar-header">
+      <button (click)="previousMonth()">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <h2>{{ currentMonth.year }} - {{ getMonthName(currentMonth.month) }}</h2>
+      <button (click)="nextMonth()">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+    <div class="calendar-weekdays">
+      <div *ngFor="let day of weekDays" class="weekday"> <div> {{day}} </div> </div>
+    </div>
+    <div class="calendar-days">
+      <!-- start with empty cells  to match the starting day of the month with weekday -->
+      <div *ngFor="let cell of emptyCellsBefore" class="calendar-day outside-month">
+        {{ cell }}
+      </div>
+      <div
+        *ngFor="let date of calendarData!.calendarDates"
+        class="calendar-day"
+        [class.selected]="date.isSelected"
+        [class.today]="date.isToday"
+        (click)="selectDate(date)"
+      >
+        {{ date.date.getDate() }}
+      </div>
+      <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
+        {{cell}}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="calendar-single-day-wrapper">
+  <div class="calendar-single-day">
+
+  </div>
+</div>

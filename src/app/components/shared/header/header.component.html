@@ -1,0 +1,54 @@
+<header>
+  <div class="logo">
+    <img src="/assets/gfx/logo/logo_paulrichter_tutoring_white.png" alt="Logo">
+  </div>
+
+  <div class="nav-dropdown">
+    <button class="nav-dropdown-btn" (click)="performDropdownClick()"> <i class="fa-solid fa-bars"> </i> </button>
+
+    <div class="nav-content" #navContent>
+      <div class="nav-centered">
+        <ul class="nav-tabs">
+          <li class="nav-item">
+            <a routerLink="/home" routerLinkActive="active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/calendar" routerLinkActive="active">Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/about" routerLinkActive="active">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <input type="button" class="login-button" value="Login">
+
+  <div class="fixed-nav-bg" (click)="performDropdownClick()" #fixedNavBackground> </div>
+  <div class="fixed-dropdown-content" #fixedNavDropdown>
+    <div class="bar"> </div>
+    <div class="fixed-nav-content">
+      <ul class="nav-tabs">
+        <li class="nav-item">
+          <a routerLink="/home" routerLinkActive="active" (click)="hideFixedMenu()">
+            <i class="fa-solid fa-gear"> </i> Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/calendar" routerLinkActive="active" (click)="hideFixedMenu()">
+            <i class="fa-solid fa-calendar"> </i> Calendar
+          </a>
+        </li>
+        <li class="nav-item" (click)="hideFixedMenu()">
+          <a routerLink="/about" routerLinkActive="active">
+            <i class="fa-solid fa-circle-info"></i> About
+          </a>
+        </li>
+        <li class="nav-item" (click)="hideFixedMenu()">
+          <i class="fa-solid fa-user"> </i>
+          <input type="button" class="fixed-login-button" value="Login" >
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

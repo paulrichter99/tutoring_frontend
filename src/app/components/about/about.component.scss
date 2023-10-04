@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  position: fixed;
+  top: 120px;
+  width: 100%;
+  height: calc(100vh - 120px);
+
+  text-align: center;
+}
+
+@import "/src/app/components/shared/variables.scss";

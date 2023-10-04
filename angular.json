@@ -29,10 +29,16 @@
               "src/favicon.ico",
               "src/assets"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/components/shared"
+              ]
+            },
             "styles": [
               "src/styles.scss"
             ],
             "scripts": []
+
           },
           "configurations": {
             "production": {
