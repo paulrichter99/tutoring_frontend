@@ -22,7 +22,7 @@
       </div>
     </div>
   </div>
-  <input type="button" class="login-button" value="Login">
+  <input type="button" class="login-button" value="Login" (click)="openLoginModal()">
 
   <div class="fixed-nav-bg" (click)="performDropdownClick()" #fixedNavBackground> </div>
   <div class="fixed-dropdown-content" #fixedNavDropdown>
@@ -46,9 +46,10 @@
         </li>
         <li class="nav-item" (click)="hideFixedMenu()">
           <i class="fa-solid fa-user"> </i>
-          <input type="button" class="fixed-login-button" value="Login" >
+          <input type="button" class="fixed-login-button" value="Login" (click)="openLoginModal()">
         </li>
       </ul>
     </div>
   </div>
 </header>
+<app-login></app-login>

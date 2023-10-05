@@ -22,7 +22,7 @@ function getSlideAnimation(direction: string){
   if(direction.match("left")){
     return [
       query(':enter, :leave',
-           style({ position: 'fixed',  width: '100%', top: '120px'}),
+           style({ position: 'fixed',  width: '100%'}),
            { optional: true }),
       group([
            query(':enter', [
@@ -40,7 +40,7 @@ function getSlideAnimation(direction: string){
   }
   return [
     query(':enter, :leave',
-        style({ position: 'fixed', width: '100%' }),
+        style({ position: 'fixed', width: '100%'}),
         { optional: true }),
     group([
         query(':enter', [

@@ -1,9 +1,9 @@
 <div class="calendar-wrapper">
   <div class="calendar-actions">
     <ul>
-      <li> <i class="fa-regular fa-calendar-days active"></i> </li>
-      <li> <i class="fa-solid fa-calendar-week"></i> </li>
-      <li> <i class="fa-regular fa-calendar"></i> </li>
+      <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-regular fa-calendar-days active"></i> </li>
+      <li (click)="changeCalendarDisplayMode('week')"> <i #weekView class="fa-solid fa-calendar-week"></i> </li>
+      <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-regular fa-calendar"></i> </li>
     </ul>
     <button> <i class="fa-regular fa-calendar-check"></i> </button>
   </div>
@@ -31,8 +31,9 @@
         [class.selected]="date.isSelected"
         [class.today]="date.isToday"
         (click)="selectDate(date)"
+        [class.has-event]="date.events!.length > 0"
       >
-        {{ date.date.getDate() }}
+        <div > {{ date.date.getDate() }} </div>
       </div>
       <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
         {{cell}}
@@ -40,8 +41,26 @@
     </div>
   </div>
 </div>
-<div class="calendar-single-day-wrapper">
+<div class="calendar-single-day-wrapper" #calendarSingleDayWrapper>
+  <!-- TODO: Choose next day from here / navigation -->
+  <div > </div>
   <div class="calendar-single-day">
-
+    <div *ngIf="selectedDate" class="calendar-selected-date-header">
+      {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()}}.{{selectedDate.date.getFullYear()}}
+    </div>
+    <div class="time-slots">
+      <div class="time-table-column times-column">
+        <div *ngFor="let hour of hours" class="time-table-row times-row">
+          <div class="time-slot"> <div> {{ hour }} </div> </div>
+          <div class="time-slot"> </div>
+        </div>
+      </div>
+      <div class="time-table-column events-column">
+        <div *ngFor="let hour of hours" class="time-table-row events-row">
+          <div class="event-slot"> <div> </div> </div>
+          <div class="event-slot"> </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

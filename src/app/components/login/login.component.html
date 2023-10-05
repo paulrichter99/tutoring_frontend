@@ -1,0 +1,28 @@
+<div #loginModalComponentWrapper class="login-modal-component-wrapper" id="login-modal-component-wrapper">
+  <div #loginBackground class="login-background" id="login-background" (click)="hideLoginModal()"> </div>
+
+  <div #loginModalWrapper class="login-modal-wrapper" id="login-modal-wrapper">
+    <div class="login-modal">
+      <div class="profile-icon-wrapper">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="login-header">
+        Anmelden
+      </div>
+      <div class="login-description">
+        Falls du keine Zugangsdaten hast, so kontaktiere mich bitte.
+      </div>
+      <div class="login-form-wrapper">
+        <div>
+          <input type="text" placeholder="Benutzername">
+        </div>
+        <div>
+          <input type="text" placeholder="Passwort">
+        </div>
+        <div>
+          <input class="login-button" type="button" value="Einloggen">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

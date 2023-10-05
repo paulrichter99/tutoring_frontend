@@ -1,5 +1,5 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { CalendarMonth, CalendarDate, CalendarData } from 'src/app/interface/calendar';
+import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
+import { CalendarMonth, CalendarDate, CalendarData, CalendarEvent } from 'src/app/interface/calendar';
 
 @Component({
   selector: 'app-calendar',
@@ -8,6 +8,12 @@ import { CalendarMonth, CalendarDate, CalendarData } from 'src/app/interface/cal
 })
 
 export class CalendarComponent implements OnInit {
+  @ViewChild('monthView', { static: true }) monthView!: ElementRef;
+  @ViewChild('weekView', { static: true }) weekView!: ElementRef;
+  @ViewChild('dayView', { static: true }) dayView!: ElementRef;
+  @ViewChild('calendarSingleDayWrapper', { static: true }) calendarSingleDayWrapper!: ElementRef;
+
+  hours: string[] = [];
   weekDays: string[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   currentMonth!: CalendarMonth;
   calendarData: CalendarData | null = null;
@@ -15,13 +21,24 @@ export class CalendarComponent implements OnInit {
   emptyCellsAfter: number[] = [];
   selectedDate: CalendarDate | null = null;
 
+  innerWidth: number = 0;
+
   ngOnInit() {
+    this.innerWidth = window.innerWidth;
+    // TODO: instead of this use the event data structure and fill it with empty events
+    for (let i = 6; i <= 20; i++) {
+      this.hours.push(`${i}`);
+    }
     // Initialize the calendar when the component is created.
     this.currentMonth = this.getCurrentMonth();
     this.calendarData = {} as CalendarData
     this.calendarData.currentMonth = this.currentMonth;
     this.calendarData.selectedDate = this.selectedDate;
     this.generateCalendar();
+  }
+  @HostListener('window:resize', ['$event'])
+  onResize(event:any) {
+    this.innerWidth = window.innerWidth;
   }
 
   // Function to get the name of the month based on its number (0-based).
@@ -71,9 +88,15 @@ export class CalendarComponent implements OnInit {
       const date = new Date(this.currentMonth.year, this.currentMonth.month, i);
       var isSelected = this.selectedDate && date.toDateString() === this.selectedDate.date.toDateString();
       const isToday = date.toDateString() === new Date().toDateString();
-      if(isToday) isSelected = true;
+      if(isToday && !this.selectedDate) isSelected = true;
 
-      this.calendarData?.calendarDates.push({ date, isSelected, isToday });
+      // This is dummy generation, normally events should be imported from the logged in user
+      var events: CalendarEvent[] = [];
+      var event: CalendarEvent = {"name": "Nachhilfe", "description":"13:30 - 15:00"};
+      if(i%5 == 0 || i%8 == 0 || i == 4)
+        events.push(event)
+
+      this.calendarData?.calendarDates.push({ date, isSelected, isToday, events});
     }
     let a = 41;
     for(let i = 42; i > (this.calendarData!.calendarDates.length+this.emptyCellsBefore.length); i--){
@@ -107,10 +130,41 @@ export class CalendarComponent implements OnInit {
   // Function to handle date selection.
   selectDate(selectedDate: CalendarDate) {
     if(!selectedDate) return
+
     this.selectedDate = selectedDate;
+    this.monthView.nativeElement.classList.remove("active");
+    this.weekView.nativeElement.classList.remove("active");
+    this.dayView.nativeElement.classList.add("active");
     this.calendarData!.calendarDates.forEach(day => {
       if(day == this.selectedDate) day.isSelected = true;
       else day.isSelected = false
     })
+    this.changeCalendarDisplayMode("day", this.selectedDate);
+  }
+
+  changeCalendarDisplayMode(mode: String, selectedDate?: CalendarDate | null){
+    this.monthView.nativeElement.classList.remove("active");
+    this.weekView.nativeElement.classList.remove("active");
+    this.dayView.nativeElement.classList.remove("active");
+    var newSelectDate: CalendarDate | null = selectedDate ? selectedDate : null;
+    var newTopForDayView = "100vh";
+
+    switch(mode){
+      case "month": this.monthView.nativeElement.classList.add("active"); break;
+      case "week": this.weekView.nativeElement.classList.add("active"); break;
+      case "day":
+        this.dayView.nativeElement.classList.add("active");
+        newTopForDayView = this.innerWidth > 750? "180px" : "115px";
+        if(this.selectedDate == null){
+          var res = this.calendarData?.calendarDates.filter((date) => date.isToday == true);
+          if(res) newSelectDate = res[0];
+        }
+        break;
+      default: this.monthView.nativeElement.classList.add("active"); break;
+    }
+
+    this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
+    this.selectedDate = newSelectDate;
+
   }
 }

@@ -9,3 +9,10 @@
 }
 
 @import "/src/app/components/shared/variables.scss";
+
+@media (max-width: 750px){
+  :host {
+    height: calc(100vh - 60px);
+    top: 60px;
+  }
+}
