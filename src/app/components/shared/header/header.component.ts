@@ -31,13 +31,16 @@ export class HeaderComponent {
 
   openLoginModal(){
     const loginModalComponentWrapper = <HTMLElement> document.getElementById('login-modal-component-wrapper');
-    const loginBackground = <HTMLElement> document.getElementById('login-background');
-    const loginModalWrapper = <HTMLElement> document.getElementById('login-modal-wrapper');
+
+    // FIXME: this was implemented to achieve an (fade-)animation, since it wouldn't initially work I just
+    //  dropped the animation for now
+    // const loginBackground = <HTMLElement> document.getElementById('login-background');
+    // const loginModalWrapper = <HTMLElement> document.getElementById('login-modal-wrapper');
 
     loginModalComponentWrapper.style.display = "flex";
-    loginBackground.style.top = "0";
-    loginModalWrapper.style.top = "0";
+    // loginBackground.style.top = "0";
+    // loginModalWrapper.style.top = "0";
 
-    loginModalComponentWrapper.style.opacity = "1";
+    // loginModalComponentWrapper.style.opacity = "1";
   }
 }

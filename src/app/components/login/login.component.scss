@@ -2,7 +2,7 @@
 .login-modal-component-wrapper{
   opacity: 1;
 
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -113,6 +113,7 @@
           color: $base-color;
           background-color: $base-color-bg-light;
           margin-top: 10px;
+          font-weight: 600;
         }
       }
     }
