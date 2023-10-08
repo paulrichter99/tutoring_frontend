@@ -25,15 +25,16 @@
       <div *ngFor="let cell of emptyCellsBefore" class="calendar-day outside-month">
         {{ cell }}
       </div>
+
       <div
-        *ngFor="let date of calendarData!.calendarDates"
+        *ngFor="let day of calendarData!.calendarDays"
         class="calendar-day"
-        [class.selected]="date.isSelected"
-        [class.today]="date.isToday"
-        (click)="selectDate(date)"
-        [class.has-event]="date.events!.length > 0"
+        [class.selected]="day.isSelected"
+        [class.today]="day.isToday"
+        [class.has-event]="day.hasEvent"
+        (click)="selectDay(day)"
       >
-        <div > {{ date.currentDate.getDate() }} </div>
+        <div > {{ day.date.getDate() }} </div>
       </div>
       <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
         {{cell}}
@@ -46,32 +47,37 @@
   <div> </div>
   <div class="calendar-single-day" *ngIf="selectedDate">
     <div class="calendar-selected-date-header">
-      {{selectedDate.currentDate.getDate()}}.{{selectedDate.currentDate.getMonth()}}.{{selectedDate.currentDate.getFullYear()}}
+      {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}}
     </div>
     <div class="time-slots">
       <div class="time-table-column times-column">
-        <div *ngFor="let hoursPerDate of selectedDate.hoursPerDate" class="time-table-row times-row">
-          <div class="time-slot"> <div *ngIf="hoursPerDate.getMinutes() == 0"> {{ hoursPerDate.getHours() }} </div> </div>
+        <div *ngFor="let hourPerDay of selectedDate.hoursPerDay" class="time-table-row times-row">
+          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }} </div> </div>
         </div>
       </div>
       <div class="time-table-column events-column">
-        <div *ngFor="let hoursPerDate of selectedDate.hoursPerDate; let i = index" class="time-table-row events-row">
-            <div *ngFor="let calendarEvent of selectedDate.events">
-              <!--  FIXME: Please implement the data-structure explained in calendar.ts -->
-              <div *ngFor="let calendarDate of calendarEvent.eventDates">
-                <div [class.has-event]="
-                        (calendarDate.currentDate.getHours()-6 == (i)) &&
-                        (calendarDate.currentDate.getMonth() == selectedDate.currentDate.getMonth()) &&
-                        (calendarDate.currentDate.getDate() == selectedDate.currentDate.getDate())">  </div>
+        <!--
+          forEach hour in a day we want to generate a eventSlot with classes:
+            -> has-event?, has-previous-event(display:none)
+        -->
+        <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
+              class="time-table-row events-row"
+              [class.hour-has-event]="hourPerDay.event"
+              [class.partOf-previous-event]="checkIfPartOfPreviousEvent(i)"
+              [style.height.px]="hourPerDay.event ? hourPerDay.event.eventDuration-1 : null"
+        >
+          <div  class="event-slot"
+                [class.empty-event-slot]="hourPerDay.event == null"
+                [class.filled-event-slot]="hourPerDay.event">
+            <div *ngIf="hourPerDay.event" style="height: 1rem; overflow: hidden;">
+              {{hourPerDay.event.eventName}}
+              <div>
+                &nbsp; | &nbsp; {{calculateTime(hourPerDay.dateTime, 0)}} Uhr -
+                {{calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
               </div>
             </div>
-          <div class="event-slot"> <div> {{i/2 +6}} </div> </div>
+          </div>
         </div>
-        <!--
-           Map {0 = 6-6, 1 = 7-6, ...}
-           We assume the following rule: 2 events cannot be held at the same time
-           The steps of a duration from an event are always 0,5 to match the pattern
-        -->
       </div>
     </div>
   </div>

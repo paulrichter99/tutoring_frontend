@@ -1,3 +1,6 @@
+
+@import "/src/app/components/shared/variables.scss";
+
 :host {
   display: flex;
   justify-content: center;
@@ -10,8 +13,6 @@
 
   overflow-y: scroll
 }
-
-@import "/src/app/components/shared/variables.scss";
 
 .calendar-wrapper {
   width: 100%;
@@ -156,9 +157,10 @@
 }
 
 .today {
-  background-color: rgb(192, 192, 192);
+  background-color: rgb(168, 168, 168);
+  font-weight: 600;
+  color: $base-color;
 }
-
 
 .has-event {
   color: $color-active-tab-dark;
@@ -239,7 +241,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 29px;
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
   }
@@ -253,11 +255,49 @@
     border-left: none;
   }
   .event-slot {
-    border-bottom: 1px solid #ccc;
-    height: 30px;
+    height: 29px;
   }
+
   .events-row{
     width: 100%;
+  }
+  .hour-has-event {
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+  }
+
+  .partOf-previous-event{
+    display: none;
+  }
+
+  .empty-event-slot{
+    border-bottom: 1px solid #ccc;
+  }
+
+  .filled-event-slot{
+    height: 70%;
+    width: 80%;
+    display: flex;
+    text-align: left;
+
+    padding: 5px 10px;
+    margin-left: 10px;
+    background-color: $base-color-bg-light;
+    border-radius: 5px;
+    color: $base-color;
+
+    div {
+      margin-top: 10px;
+      display: inline;
+      @media (max-width: 480px){
+        div{
+          display: none;
+        }
+      }
+    }
   }
 }
 
