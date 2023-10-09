@@ -18,10 +18,12 @@ export class HeaderComponent implements OnInit{
   user: User | null = null;
 
   ngOnInit(): void {
-    this.userService.getUserData().subscribe({
-      next: (userData) => this.user = userData,
-      error: (e) => console.error(e)
-    })
+    if(localStorage.getItem("jwt_token")){
+      this.userService.getUserData().subscribe({
+        next: (userData) => this.user = userData,
+        error: (e) => console.error(e)
+      })
+    }
   }
 
   performDropdownClick(){
@@ -55,5 +57,11 @@ export class HeaderComponent implements OnInit{
     // loginModalWrapper.style.top = "0";
 
     // loginModalComponentWrapper.style.opacity = "1";
+  }
+
+  logout(){
+    this.user = null;
+    localStorage.removeItem("jwt_token")
+    this.hideFixedMenu();
   }
 }

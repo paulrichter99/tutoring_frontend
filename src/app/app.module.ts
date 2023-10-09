@@ -12,6 +12,8 @@ import { RouterModule } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth-interceptor';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 @NgModule({
@@ -21,13 +23,16 @@ import { AuthInterceptor } from './services/auth-interceptor';
     HeaderComponent,
     CalendarComponent,
     AboutComponent,
-    LoginComponent
+    LoginComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],

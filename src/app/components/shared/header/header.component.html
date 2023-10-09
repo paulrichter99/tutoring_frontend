@@ -10,19 +10,22 @@
       <div class="nav-centered">
         <ul class="nav-tabs">
           <li class="nav-item">
-            <a routerLink="/home" routerLinkActive="active">Home</a>
+            <a routerLink="/home" routerLinkActive="active">Startseite</a>
           </li>
           <li class="nav-item">
-            <a routerLink="/calendar" routerLinkActive="active">Calendar</a>
+            <a routerLink="/calendar" routerLinkActive="active">Kalender</a>
           </li>
           <li class="nav-item">
-            <a routerLink="/about" routerLinkActive="active">About</a>
+            <a routerLink="/about" routerLinkActive="active">Über uns</a>
           </li>
         </ul>
       </div>
     </div>
   </div>
-  <input type="button" class="login-button" value="Login" (click)="openLoginModal()">
+
+  <!-- TODO: Instead of a logout button, we want a profile dropdown like fixed-dropdown -->
+  <input *ngIf="this.user == null" type="button" class="login-button" value="Login" (click)="openLoginModal()">
+  <input *ngIf="this.user" type="button" class="login-button" value="Logout" (click)="logout()">
 
   <div class="fixed-nav-bg" (click)="performDropdownClick()" #fixedNavBackground> </div>
   <div class="fixed-dropdown-content" #fixedNavDropdown>
@@ -31,22 +34,31 @@
       <ul class="nav-tabs">
         <li class="nav-item">
           <a routerLink="/home" routerLinkActive="active" (click)="hideFixedMenu()">
-            <i class="fa-solid fa-gear"> </i> Home
+            <i class="fa-solid fa-gear"> </i>Startseite
           </a>
         </li>
         <li class="nav-item">
           <a routerLink="/calendar" routerLinkActive="active" (click)="hideFixedMenu()">
-            <i class="fa-solid fa-calendar"> </i> Calendar
+            <i class="fa-solid fa-calendar"> </i>Kalender
           </a>
         </li>
         <li class="nav-item" (click)="hideFixedMenu()">
           <a routerLink="/about" routerLinkActive="active">
-            <i class="fa-solid fa-circle-info"></i> About
+            <i class="fa-solid fa-circle-info"></i>Über uns
           </a>
         </li>
-        <li class="nav-item" (click)="hideFixedMenu()">
+        <li *ngIf="!this.user" class="nav-item" (click)="hideFixedMenu()">
           <i class="fa-solid fa-user"> </i>
           <input type="button" class="fixed-login-button" value="Login" (click)="openLoginModal()">
+        </li>
+        <li *ngIf="this.user" class="nav-item" (click)="hideFixedMenu()">
+          <a routerLink="/profile" routerLinkActive="active">
+            <i class="fa-solid fa-user"> </i>Profil
+          </a>
+        </li>
+        <li *ngIf="this.user" class="nav-item" (click)="hideFixedMenu()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <input type="button" class="fixed-login-button" value="Logout" (click)="logout()">
         </li>
       </ul>
     </div>
