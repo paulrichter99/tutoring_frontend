@@ -1,6 +1,8 @@
 import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CalendarMonth, CalendarDate, CalendarData, CalendarEvent, CalendarDay } from 'src/app/interface/calendar';
+import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-calendar',
@@ -27,7 +29,9 @@ export class CalendarComponent implements OnInit {
 
   innerWidth: number = 0;
 
-  constructor(private calenderEventService: CalendarEventService){}
+  constructor(private calenderEventService: CalendarEventService,
+              private userService: UserService)
+  { }
 
   ngOnInit() {
     this.getEventsFromBackend();
@@ -231,17 +235,17 @@ export class CalendarComponent implements OnInit {
   }
 
   getEventsFromBackend(){
-    this.calenderEventService.getAllEvents().subscribe(
-      (data) => {
-        console.log(data)
-        this.calendarEvents = <CalendarEvent[]> data;
+    this.userService.getUserData().subscribe({
+      next: (data) => {
+        this.calendarEvents = (<User>data)?.calendarEvents;
         this.convertDateData();
         this.generateCalendar();
-      },(error) => {
+      },
+      error: (error) => {
         this.calendarEvents = [];
         this.generateCalendar();
       }
-    )
+    })
   }
 
   checkIfPartOfPreviousEvent(index: number): boolean{

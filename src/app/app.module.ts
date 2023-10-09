@@ -11,6 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './services/auth-interceptor';
 
 
 @NgModule({
@@ -28,7 +29,9 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
     BrowserAnimationsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },],
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,11 @@
+import { CalendarEvent } from "./calendar";
+
 export interface User {
   username: string;
-  // Other user properties as needed
+  calendarEvents: CalendarEvent[];
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
 }

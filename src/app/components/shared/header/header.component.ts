@@ -1,15 +1,28 @@
-import { Component, ElementRef, HostBinding, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, OnInit, ViewChild } from '@angular/core';
+import { User } from 'src/app/interface/user';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit{
   @ViewChild('fixedNavBackground', { static: true }) fixedNavBackground!: ElementRef;
   @ViewChild('fixedNavDropdown', { static: true }) fixedNavDropdown!: ElementRef;
 
   dropdownIsOpen: boolean = false;
+
+  constructor(private userService: UserService){}
+
+  user: User | null = null;
+
+  ngOnInit(): void {
+    this.userService.getUserData().subscribe({
+      next: (userData) => this.user = userData,
+      error: (e) => console.error(e)
+    })
+  }
 
   performDropdownClick(){
     if(!this.dropdownIsOpen){
