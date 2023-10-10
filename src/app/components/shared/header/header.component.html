@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+  <input *ngIf="this.user == null" type="button" class="login-button" value="Login" (click)="openLoginModal()">
 
   <!--this is used for the dropdown for web-view (screen > 750px)-->
   <ul class="dropdown" #dropdown>
