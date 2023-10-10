@@ -10,6 +10,8 @@ import { UserService } from 'src/app/services/user.service';
 export class HeaderComponent implements OnInit{
   @ViewChild('fixedNavBackground', { static: true }) fixedNavBackground!: ElementRef;
   @ViewChild('fixedNavDropdown', { static: true }) fixedNavDropdown!: ElementRef;
+  @ViewChild('dropdownContent', { static: true }) dropdownContent!: ElementRef;
+  @ViewChild('dropdown', { static: true }) dropdown!: ElementRef;
 
   dropdownIsOpen: boolean = false;
 
@@ -20,13 +22,29 @@ export class HeaderComponent implements OnInit{
   ngOnInit(): void {
     if(localStorage.getItem("jwt_token")){
       this.userService.getUserData().subscribe({
-        next: (userData) => this.user = userData,
+        next: (userData) => {
+          this.user = userData;
+          this.dropdown.nativeElement.style.display="block";
+        },
         error: (e) => console.error(e)
       })
     }
   }
-
   performDropdownClick(){
+    if(window.innerWidth < 750){
+      this.performMobileDropdownClick();
+      return;
+    }
+    if(!this.dropdownIsOpen){
+      this.dropdownContent.nativeElement.style.marginRight = "0px";
+      this.fixedNavBackground.nativeElement.style.display = "block";
+    }else{
+      this.dropdownContent.nativeElement.style.marginRight = "-500px";
+      this.fixedNavBackground.nativeElement.style.display = "none";
+    }
+    this.dropdownIsOpen = !this.dropdownIsOpen
+  }
+  performMobileDropdownClick() {
     if(!this.dropdownIsOpen){
       this.fixedNavDropdown.nativeElement.style.top = "160px";
       this.fixedNavBackground.nativeElement.style.display = "block";
@@ -41,6 +59,7 @@ export class HeaderComponent implements OnInit{
   hideFixedMenu(){
     this.fixedNavBackground.nativeElement.style.display = "none";
     this.fixedNavDropdown.nativeElement.style.top = "100vh";
+    this.dropdownContent.nativeElement.style.marginRight = "-500px";
     this.dropdownIsOpen = false;
   }
 
@@ -61,7 +80,7 @@ export class HeaderComponent implements OnInit{
 
   logout(){
     this.user = null;
-    localStorage.removeItem("jwt_token")
-    this.hideFixedMenu();
+    localStorage.removeItem("jwt_token");
+    window.location.reload();
   }
 }
