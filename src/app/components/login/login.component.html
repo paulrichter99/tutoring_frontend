@@ -12,17 +12,27 @@
       <div class="login-description">
         Falls du keine Zugangsdaten hast, so kontaktiere mich bitte.
       </div>
-      <div class="login-form-wrapper">
+      <form [formGroup]="loginForm" class="login-form-wrapper">
         <div>
-          <input type="text" placeholder="Benutzername">
+          <input
+            [class.wrong-credentials]="wrongCredentials"
+            [class.disabled]="processingLogin"
+            type="text" name="input-field" formControlName="username" placeholder="Benutzername">
         </div>
         <div>
-          <input type="text" placeholder="Passwort">
+          <input
+            [class.wrong-credentials]="wrongCredentials"
+            [class.disabled]="processingLogin"
+            type="password" name="input-field" formControlName="password" placeholder="Passwort">
         </div>
         <div>
-          <input class="login-button" type="button" value="Einloggen">
+          <input #loginButton [class.disabled]="processingLogin" class="login-button"
+            type="button" value="Einloggen" (click)="login()">
         </div>
-      </div>
+        <div *ngIf="this.wrongCredentials" class="div-wrong-credentials">
+          Wrong credentials
+        </div>
+      </form>
     </div>
   </div>
 </div>

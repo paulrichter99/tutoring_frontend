@@ -2,7 +2,7 @@
 .login-modal-component-wrapper{
   opacity: 1;
 
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -95,6 +95,16 @@
         margin: 5px 0;
         width: 100%;
 
+        .wrong-credentials{
+          color: $base-color-bg;
+          background-color: rgba($color-active-tab,0.3);
+          border: 1px solid rgba($color-active-tab,0.8);
+        }
+
+        .wrong-credentials::placeholder {
+          color: rgba($base-color-bg, 0.8);
+        }
+
         input{
           background-color: #ebebeb;
           border: none;
@@ -113,12 +123,23 @@
           color: $base-color;
           background-color: $base-color-bg-light;
           margin-top: 10px;
+          font-weight: 600;
         }
+
+        .disabled {
+          background-color: rgba(rgb(194, 194, 194), 1);
+          color: $base-color;
+          user-select: none;
+        }
+      }
+
+      .div-wrong-credentials{
+          color: $color-active-tab-dark;
+          margin-top: 20px;
       }
     }
   }
 }
-
 
 @media (max-width: 750px){
   .login-modal-component-wrapper{

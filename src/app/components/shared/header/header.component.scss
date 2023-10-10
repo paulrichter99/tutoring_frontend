@@ -17,17 +17,32 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-grow: 1;
 }
 
 .nav-dropdown-btn{
-  display: none;
+  display: block;
+  border: none;
+  background-color: transparent;
+  height: 100%;
+  color: $base-color;
+  font-size: 25px;
+  width: 130px;
 }
 
 .nav-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-grow: 1;
+}
+
+.nav-centered {
+  .nav-tabs {
+    li{
+      text-align: center;
+    }
+  }
 }
 
 .nav-tabs {
@@ -39,6 +54,7 @@ header {
 .nav-item {
   margin: 0 15px;
   width: 33%;
+  min-width: 120px;
 }
 
 .nav-item a {
@@ -86,6 +102,78 @@ header {
   display: none;
 }
 
+.dropdown{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 130px;
+  display: none;
+
+  .dropdown-content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin-right: -500px;
+    background-color: $base-color-bg;
+    width: 500px;
+    height: 100vh;
+    z-index: 20;
+
+    transition: margin-right 0.3s ease-in-out;
+
+    .dropdown-greeting{
+      height: 120px;
+      background-color: $dropdown-background;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .fa-circle-user{
+        font-size: 45px;
+        margin-right: 20px;
+      }
+    }
+
+    .dropdown-menu-list {
+      margin-top: 10px;
+      padding: 10px;
+      a {
+        display: block;
+        border-radius: 5px;
+        padding: 20px 25px;
+        text-decoration: none;
+        color: $base-color;
+        text-align: left;
+
+        i {
+          margin-right: 20px;
+        }
+      }
+    }
+  }
+}
+
+
+/* Style for the dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: $base-color-bg-secondary;
+}
+
+/* Show the dropdown content when hovering over the dropdown button */
+.nav-item.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.fixed-nav-bg {
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  left: 0;
+  top: 0;
+  opacity: 0.7;
+  z-index: 10;
+  background-color: $dropdown-background;
+}
 
 @media (max-width: 750px){
   header{
@@ -96,20 +184,27 @@ header {
     display: none;
   }
 
-  .nav-dropdown {
+  .dropdown {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    flex-grow: 0;
+    justify-content: right;
+
+    .nav-item{
+      display: flex;
+      justify-content: right;
+    }
+  }
+
+  .dropdown-content{
+    position: relative;
+    display: none;
+  }
+
+  .nav-dropdown {
+    display: none
   }
 
   .nav-dropdown-btn{
-    display: block;
-    border: none;
-    background-color: transparent;
-    height: 100%;
-    color: $base-color;
-    font-size: 25px;
+    width: auto;
     margin-right: 10px;
   }
 
@@ -119,17 +214,6 @@ header {
 
   .login-button {
     display: none;
-  }
-
-  .fixed-nav-bg {
-    position: fixed;
-    height: 100vh;
-    width: 100%;
-    left: 0;
-    top: 0;
-    opacity: 0.6;
-    z-index: 10;
-    background-color: $base-color-bg-secondary;
   }
 
   .fixed-dropdown-content{

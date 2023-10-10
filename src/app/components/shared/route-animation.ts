@@ -12,8 +12,8 @@ const animationDuration = "0.5s ease"
 
 export const slideInAnimation =
   trigger('routeAnimations', [
-       transition('1 => *, 2 => 3', getSlideAnimation("left")),
-       transition('3 => *, 2 => 1', getSlideAnimation("right")),
+       transition('1 => *, 2 => 3, 2 => 4, 3 => 4', getSlideAnimation("left")),
+       transition('4 => *, 3 => 2, 2 => 1, 3 => 1', getSlideAnimation("right")),
 ]);
 
 function getSlideAnimation(direction: string){
