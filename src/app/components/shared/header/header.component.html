@@ -31,14 +31,14 @@
           <i class="fa-solid fa-circle-user"></i> Hallo, {{this.user?.username}}
         </div>
         <div class="dropdown-menu-list">
-          <a routerLink="/profile" routerLinkActive="active">
+          <a routerLink="/profile" routerLinkActive="active" (click)="hideFixedMenu()">
             <i class="fa-solid fa-user"></i>Mein Profil
           </a>
-          <a routerLink="/" routerLinkActive="active">
+          <a routerLink="/" routerLinkActive="active" (click)="hideFixedMenu()">
             <i class="fa-solid fa-gear"></i>Einstellungen
           </a>
           <a (click)="logout()">
-              <i class="fa-solid fa-right-from-bracket"></i> Logout
+              <i class="fa-solid fa-right-from-bracket"></i>Logout
           </a>
         </div>
       </div>

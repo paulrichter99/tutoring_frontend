@@ -1,0 +1,62 @@
+<div class="event-details-component-wrapper"
+  *ngIf="this.currentEventDate ? this.currentEventDate.showEvent : false"
+  (click)="$event.stopPropagation()"
+>
+  <div class="event-details-component-background" (click)="closeEventDetails();$event.stopPropagation()"></div>
+  <div class="event-details event-form" *ngIf="this.currentEvent && this.currentEventDate" id='event-details'>
+    <div class="event-header">
+      <button (click)="closeEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-xmark"></i> </button>
+      <div> Termin bearbeiten </div>
+      <button (click)="saveEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-check"></i> </button>
+    </div>
+    <div class="event-name">
+      <label> <i class="fa-regular fa-bookmark"></i> </label>
+      <input id="event-name-input" type="text"
+        value="{{this.currentEvent.eventName}}" placeholder="Titel hinzufügen">
+    </div>
+    <div class="event-time">
+      <div class="times-icon-wrapper"> <i class="fa-regular fa-clock"></i> </div>
+      <div class="times-wrapper">
+        <div class="starting-time">
+          <input type="date"
+            class="event-date-day-input"
+            id="event-date-day-input"
+            name="eventDateDay"
+            value="{{this.currentEventDate.dateTime.toISOString().substr(0, 10)}}">
+          <select
+            class="event-date-time-select" id="event-date-time-select">
+            <option *ngFor="let possibleHour of possibleHours; let i = index" value="{{possibleHour}}">
+              {{possibleHour}} &nbsp; &#xf017;
+            </option>
+          </select>
+        </div>
+        <div class="event-duration">
+          <select class="event-duration-select"  id="event-duration-select" value="{{this.currentEvent.eventDuration}}">
+            <option value="60"> 60 min </option>
+            <option value="90"> 90 min </option>
+            <option value="120"> 120 min </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!--
+    <div class="event-repeat">
+      <label> <i class="fi fi-rs-arrows-repeat"></i> </label>
+      <select class="repeating-event-select" id="event-repeating-select">
+        <option *ngFor="let eventRepetitionType of eventRepetitionOptions; let i = index"
+          [value]="i"> {{eventRepetitionType}} </option>
+      </select>
+    </div>
+    -->
+    <div class="event-place">
+      <label> <i class="fi fi-rs-marker"></i> </label>
+      <select
+        id="event-place-select"
+        value="{{this.currentEvent.eventPlace ? this.currentEvent.eventPlace : 'home'}}"
+      >
+        <option value="online"> Online </option>
+        <option value="home"> Zuhause </option>
+      </select>
+    </div>
+  </div>
+</div>

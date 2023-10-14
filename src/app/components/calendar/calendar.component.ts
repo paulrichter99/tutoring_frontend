@@ -28,6 +28,10 @@ export class CalendarComponent implements OnInit {
   calendarEvents: CalendarEvent[] | null = null;
 
   innerWidth: number = 0;
+  selectedEvent: CalendarEvent | null = null;
+  selectedEventDateTime: Date | null = null;
+
+  currentCalendarViewMode: string = "month";
 
   constructor(private calenderEventService: CalendarEventService,
               private userService: UserService)
@@ -202,7 +206,10 @@ export class CalendarComponent implements OnInit {
     this.changeCalendarDisplayMode("day", this.selectedDate);
   }
 
-  changeCalendarDisplayMode(mode: String, selectedDate?: CalendarDay | null){
+  changeCalendarDisplayMode(mode: string, selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == mode)
+      return;
+    this.currentCalendarViewMode = mode;
     this.monthView.nativeElement.classList.remove("active");
     this.weekView.nativeElement.classList.remove("active");
     this.dayView.nativeElement.classList.remove("active");
@@ -238,6 +245,7 @@ export class CalendarComponent implements OnInit {
     this.userService.getUserData().subscribe({
       next: (data) => {
         this.calendarEvents = (<User>data)?.calendarEvents;
+        console.log(data)
         this.convertDateData();
         this.generateCalendar();
       },
@@ -253,7 +261,7 @@ export class CalendarComponent implements OnInit {
     if(index > 0){
       if( this.selectedDate!.hoursPerDay[index-1].event &&
           this.selectedDate!.hoursPerDay[index].event &&
-          (this.selectedDate!.hoursPerDay[index].event?.eventId == this.selectedDate!.hoursPerDay[index-1].event?.eventId)
+          (this.selectedDate!.hoursPerDay[index].event?.id == this.selectedDate!.hoursPerDay[index-1].event?.id)
       ){
         check = true;
       }
@@ -281,5 +289,14 @@ export class CalendarComponent implements OnInit {
 
     endTime = fullHour.toString() + ":" + minutes.toString()
     return endTime
+  }
+
+  selectEvent(selectedEventDateTime: CalendarDate | null){
+    // TODO: Maybe we want to check if the event an event located in the past
+    //  -> note:  this can be disadvantageous if the teacher or student misses to
+    //            edit the event in time, after they agreed to move the event verbally
+    //            The check for the new date in the event-details-component may be enough here
+    if(selectedEventDateTime && !selectedEventDateTime.showEvent)
+      selectedEventDateTime.showEvent = true;
   }
 }
