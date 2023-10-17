@@ -16,6 +16,8 @@ export class UserService {
     return this.httpClient.post(this.baseUrl + "/login", loginRequest);
   }
 
+  // TODO: check the usage: Should only get used by parent components
+
   public getUserData(): Observable<any> {
     return this.httpClient.get(this.baseUrl + "/me").pipe();
   }

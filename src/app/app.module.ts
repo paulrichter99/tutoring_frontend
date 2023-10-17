@@ -14,6 +14,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth-interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './components/profile/profile.component';
+import { EventDetailsComponent } from './components/event-details/event-details.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     AboutComponent,
     LoginComponent,
     ProfileComponent,
+    EventDetailsComponent,
   ],
   imports: [
     BrowserModule,

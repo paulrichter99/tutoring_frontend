@@ -179,7 +179,6 @@
 .calendar-single-day-wrapper{
   display: block;
   z-index: 5;
-  background-color: $base-color;
 
   position: fixed;
   top: 100vh;
@@ -203,6 +202,7 @@
 
 .calendar-single-day{
   width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 10px;
   padding-top: 30px;
@@ -214,6 +214,7 @@
 
   border-radius: 30px;
   border: 1px solid #ccc;
+  background-color: white;
 }
 
 .time-slots {

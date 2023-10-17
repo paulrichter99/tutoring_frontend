@@ -57,25 +57,42 @@
       </div>
       <div class="time-table-column events-column">
         <!--
-          forEach hour in a day we want to generate a eventSlot with classes:
-            -> has-event?, has-previous-event(display:none)
+          TODO: Mobile view: take the whole screen instead of bordered view
+          -> It additionally seems that you can scroll the bare minimum in day view for some reason
+            ->  figure out how the scrolling is affected and fix this, so that scrolling is consistent across
+                user devices
         -->
         <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
               class="time-table-row events-row"
-              [class.hour-has-event]="hourPerDay.event"
+              [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
               [class.partOf-previous-event]="checkIfPartOfPreviousEvent(i)"
-              [style.height.px]="hourPerDay.event ? hourPerDay.event.eventDuration-1 : null"
+              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
         >
           <div  class="event-slot"
-                [class.empty-event-slot]="hourPerDay.event == null"
-                [class.filled-event-slot]="hourPerDay.event">
-            <div *ngIf="hourPerDay.event" style="height: 1rem; overflow: hidden;">
+                [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
+                [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
+                (click)="selectEvent(hourPerDay)">
+            <app-event-details
+              *ngIf="checkIfPartOfPreviousEvent(i) == false
+              && hourPerDay.showEvent == true
+              && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
+              [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
+              [currentEventDate]="hourPerDay"
+              [currentCalendarDay]="selectedDate"
+            ></app-event-details>
+            <div *ngIf="hourPerDay.event
+                  && hourPerDay.event.id
+                  && !(hourPerDay.event.isAnonymousEvent)"
+                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
+            >
               {{hourPerDay.event.eventName}}
               <div>
                 &nbsp; | &nbsp; {{calculateTime(hourPerDay.dateTime, 0)}} Uhr -
                 {{calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
               </div>
             </div>
+            <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"
+                  style="height: 1rem; overflow: hidden; line-height: 1rem;"> Bereits blockiert</div>
           </div>
         </div>
       </div>
