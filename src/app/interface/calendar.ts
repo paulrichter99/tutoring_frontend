@@ -24,12 +24,12 @@ export interface CalendarDate {
   // important are hours and minutes
   id?: number;
   dateTime: Date;
-  event: CalendarEvent | null;
+  event?: CalendarEvent;
   showEvent?: boolean | null;
 }
 
 export interface CalendarEvent {
-  id: number;
+  id?: number;
   eventName: string;
   eventDescription: string;
   eventDuration: number;
@@ -37,5 +37,6 @@ export interface CalendarEvent {
   // these two should be mandatory
   eventUsers?: User[];
   eventPlace?: string;
+  isAnonymousEvent?: boolean;
 }
 

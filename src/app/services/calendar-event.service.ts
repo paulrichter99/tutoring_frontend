@@ -7,17 +7,25 @@ import { CalendarEvent } from '../interface/calendar';
 })
 export class CalendarEventService {
 
-  backendUrl = "http://192.168.178.28:8085/api";
+  public baseUrl = "http://localhost:8085/api";
 
   constructor(private http: HttpClient) {
 
   }
 
-  getAllEvents(){
-    return this.http.get(this.backendUrl + "/calendarEvent/all").pipe();
+  getAllEventsForAdmin(){
+    return this.http.get(this.baseUrl + "/calendarEvent/all/admin").pipe();
+  }
+
+  getAllEventsForAnyUser(){
+    return this.http.get(this.baseUrl + "/calendarEvent/all/user").pipe();
   }
 
   saveEvent(calendarEvent:CalendarEvent){
-    return this.http.put(this.backendUrl + "/calendarEvent/" + calendarEvent.id, calendarEvent);
+    return this.http.post(this.baseUrl + "/calendarEvent", calendarEvent);
+  }
+
+  updateEvent(calendarEvent:CalendarEvent){
+    return this.http.put(this.baseUrl + "/calendarEvent/" + calendarEvent.id, calendarEvent);
   }
 }

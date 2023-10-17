@@ -1,8 +1,10 @@
 import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
+import { elementAt } from 'rxjs';
 import { CalendarMonth, CalendarDate, CalendarData, CalendarEvent, CalendarDay } from 'src/app/interface/calendar';
 import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
 import { UserService } from 'src/app/services/user.service';
+import { MIN_DAILY_HOUR } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-calendar',
@@ -26,19 +28,21 @@ export class CalendarComponent implements OnInit {
   selectedDate: CalendarDay | null = null;
 
   calendarEvents: CalendarEvent[] | null = null;
+  anonymousCalendarEvents: CalendarEvent[] | null = null;
 
   innerWidth: number = 0;
   selectedEvent: CalendarEvent | null = null;
   selectedEventDateTime: Date | null = null;
 
   currentCalendarViewMode: string = "month";
+  currentUser: User | null = null;
 
   constructor(private calenderEventService: CalendarEventService,
               private userService: UserService)
   { }
 
   ngOnInit() {
-    this.getEventsFromBackend();
+    this.getAllEventsTest();
     this.innerWidth = window.innerWidth;
     // Initialize the calendar when the component is created.
     this.currentMonth = this.getCurrentMonth();
@@ -46,6 +50,7 @@ export class CalendarComponent implements OnInit {
     this.calendarData.currentMonth = this.currentMonth;
     this.calendarData.selectedDate = this.selectedDate;
   }
+
   @HostListener('window:resize', ['$event'])
   onResize(event:any) {
     this.innerWidth = window.innerWidth;
@@ -141,7 +146,7 @@ export class CalendarComponent implements OnInit {
       const correctDay = this.calendarData!.calendarDays[calendarDate.dateTime.getDate()-1]
 
       // since we are sure this is the matching day, we now search for the correct time
-      var startIndex = (calendarDate.dateTime.getHours() - 6)
+      var startIndex = (calendarDate.dateTime.getHours() - MIN_DAILY_HOUR)
       if(calendarDate.dateTime.getMinutes() == 30){
         startIndex += 0.5
       }
@@ -160,19 +165,17 @@ export class CalendarComponent implements OnInit {
       }
     }
   }
-
+  // Function to generate the hours for every day from 8:00, 8:30 ... 19:00, 19:30
   generateHoursPerDate(date: Date){
     var arr: CalendarDate[] = [];
-    for(let i = 6; i <= 19; i++){
+    for(let i = MIN_DAILY_HOUR; i <= 19; i++){
       var dateTime: Date = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i, 0, 0);
-      arr.push({dateTime, "event": null})
+      arr.push({dateTime})
       dateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), i, 30, 0);
-      arr.push({dateTime, "event": null})
+      arr.push({dateTime})
     }
     return arr;
   }
-
-
 
   // Function to handle navigation to the previous month.
   previousMonth() {
@@ -244,8 +247,17 @@ export class CalendarComponent implements OnInit {
   getEventsFromBackend(){
     this.userService.getUserData().subscribe({
       next: (data) => {
+        this.currentUser = <User>data;
         this.calendarEvents = (<User>data)?.calendarEvents;
-        console.log(data)
+        if(!this.anonymousCalendarEvents){
+          console.error("Something went wrong: CalendarComponent -> getEventsFromBackend()")
+        }
+        for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
+          if(!(this.calendarEvents.find((element) => element.id == anonymousCalendarEvent.id))){
+            this.calendarEvents.push(anonymousCalendarEvent);
+            this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
+          }
+        }
         this.convertDateData();
         this.generateCalendar();
       },
@@ -292,11 +304,38 @@ export class CalendarComponent implements OnInit {
   }
 
   selectEvent(selectedEventDateTime: CalendarDate | null){
-    // TODO: Maybe we want to check if the event an event located in the past
-    //  -> note:  this can be disadvantageous if the teacher or student misses to
-    //            edit the event in time, after they agreed to move the event verbally
-    //            The check for the new date in the event-details-component may be enough here
+    // we check if the selectEvent actually is meant to be a new event
+    if(selectedEventDateTime?.event == null){
+      // all times after 18:00 are only for the purpose of showing events, not for creating one at this time
+      // therefore, we will set the max time to 18:00
+      if(
+        (selectedEventDateTime?.dateTime.getHours()! == 18 && selectedEventDateTime?.dateTime.getMinutes()! != 0)
+        || selectedEventDateTime?.dateTime.getHours()! > 18){
+        selectedEventDateTime?.dateTime.setHours(18);
+        selectedEventDateTime?.dateTime.setMinutes(0);
+      }
+      selectedEventDateTime!.event =
+        { "eventName": "",
+          "eventDates": [ {"dateTime": selectedEventDateTime!.dateTime} ],
+          "eventDescription": "",
+          "eventDuration": 60,
+          "eventPlace":"home",
+          "eventUsers": [this.currentUser!]
+        }
+
+    }
+
     if(selectedEventDateTime && !selectedEventDateTime.showEvent)
       selectedEventDateTime.showEvent = true;
+  }
+
+  async getAllEventsTest(){
+    this.calenderEventService.getAllEventsForAnyUser().subscribe({
+      next: data => {
+        this.anonymousCalendarEvents = <CalendarEvent[]>data
+        this.getEventsFromBackend();
+      },
+      error: e => console.error(e)
+    })
   }
 }

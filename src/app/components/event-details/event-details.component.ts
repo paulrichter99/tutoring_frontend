@@ -1,5 +1,5 @@
 import { ReturnStatement } from '@angular/compiler';
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EventRepetitionEnum } from 'src/app/enum/EventRepetition';
 import { CalendarDate, CalendarEvent } from 'src/app/interface/calendar';
@@ -11,7 +11,7 @@ import { HOURS_SELECTION } from 'src/app/variables/variables';
   templateUrl: './event-details.component.html',
   styleUrls: ['./event-details.component.scss']
 })
-export class EventDetailsComponent implements AfterViewInit{
+export class EventDetailsComponent implements AfterViewInit, OnInit{
   @Input() currentEvent: CalendarEvent | null = null;
   @Input() currentEventDate: CalendarDate | null = null;
 
@@ -20,10 +20,15 @@ export class EventDetailsComponent implements AfterViewInit{
   //eventRepetitionKeys: string[] = []
 
   possibleHours = HOURS_SELECTION;
+  isPlaceholderEvent: boolean = false;
 
   constructor(private calendarEventService: CalendarEventService){
     //this.eventRepetitionOptions = Object.values(this.eventRepetitionEnum)
     //this.eventRepetitionKeys = Object.keys(this.eventRepetitionEnum)
+  }
+
+  ngOnInit(): void {
+    if(!(this.currentEvent?.id))  this.isPlaceholderEvent = true;
   }
 
   ngAfterViewInit(): void {
@@ -33,16 +38,23 @@ export class EventDetailsComponent implements AfterViewInit{
       console.error("Something went wrong: EventDetails - " + this.currentEvent?.id + " : " + this.currentEventDate?.dateTime)
       return;
     }
-
+    eventDetailsElement.style.marginTop = "151px";
+    /*
     if(eventDetailsElement.getBoundingClientRect().top + eventDetailsElement.getBoundingClientRect().height > window.innerHeight){
       eventDetailsElement.style.bottom = "40px";
     }
+    */
     // set initial time in eventDateTimeSelectElement
     const eventDateTimeSelectElement = <HTMLSelectElement>document.getElementById("event-date-time-select");
-    eventDateTimeSelectElement.value = this.currentEventDate!.dateTime.toLocaleTimeString().substr(0,5);
+    eventDateTimeSelectElement.value =
+      this.currentEventDate!.dateTime.getHours() + ":" + String(this.currentEventDate!.dateTime.getMinutes()).padStart(2, '0');
   }
 
   closeEventDetails(){
+    if(this.isPlaceholderEvent){
+      this.currentEventDate!.event = undefined;
+      this.currentEvent = null;
+    }
     if(this.currentEventDate)
       this.currentEventDate.showEvent = false;
 
@@ -92,6 +104,8 @@ export class EventDetailsComponent implements AfterViewInit{
     }
     else this.setElementMatchingRules(eventDateTimeSelectElement, eventDateDayInputElement);
 
+    // TODO: additional check: We want to check if the date already is occupied
+
     if(!matchingRules) return;
      // eventDuration could be set to something different then the three possible options via HTML,
      // however, this will be checked in the backend, since it would be a deliberate exploit
@@ -111,15 +125,34 @@ export class EventDetailsComponent implements AfterViewInit{
     // TODO: Place of tutoring session not yet used, please set in backend
     this.currentEvent.eventPlace = eventPlaceSelectElement.value;
 
-    this.calendarEventService.saveEvent(this.currentEvent).subscribe({
+    console.log(this.currentEvent.id)
+    if(this.currentEvent.id) this.updateEvent()
+    else this.saveEvent();
+
+    this.closeEventDetails()
+
+  }
+
+  saveEvent(){
+    this.calendarEventService.saveEvent(this.currentEvent!).subscribe({
       next: (data) => {
         this.currentEvent = <CalendarEvent>data;
         this.convertDateData();
+        this.isPlaceholderEvent = false;
       },
       error: (e) => console.error(e)
     });
-    this.closeEventDetails()
+  }
 
+  updateEvent(){
+    this.calendarEventService.updateEvent(this.currentEvent!).subscribe({
+      next: (data) => {
+        this.currentEvent = <CalendarEvent>data;
+        this.convertDateData();
+        this.isPlaceholderEvent = false;
+      },
+      error: (e) => console.error(e)
+    });
   }
 
   convertDateData(){

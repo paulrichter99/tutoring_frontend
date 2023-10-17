@@ -8,7 +8,7 @@ import { LoginRequest, User } from '../interface/user';
 })
 export class UserService {
 
-  public baseUrl = "http://192.168.178.28:8085/api/user";
+  public baseUrl = "http://localhost:8085/api/user";
 
   constructor(private httpClient: HttpClient) { }
 

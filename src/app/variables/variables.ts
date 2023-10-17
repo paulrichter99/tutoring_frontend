@@ -13,3 +13,5 @@ export const HOURS_SELECTION = [
   "17:00", "17:30",
   "18:00"
 ]
+
+export const MIN_DAILY_HOUR = 8;
