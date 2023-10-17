@@ -23,7 +23,6 @@
 }
 
 .event-details{
-  position: absolute;
   z-index: 30;
 
   height: 50vh;
@@ -34,6 +33,7 @@
   background-color: $base-color;
   border-radius: 10px;
   color: $base-color-bg;
+  margin-top: 151px;
 
   > div{
     margin: 20px;
@@ -256,6 +256,7 @@
     left: 0;
     width: 100%;
     max-width: 100%;
+    margin-top: 0;
 
     .close-button{
       display: block;

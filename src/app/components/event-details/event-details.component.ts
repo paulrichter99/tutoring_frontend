@@ -2,7 +2,7 @@ import { ReturnStatement } from '@angular/compiler';
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EventRepetitionEnum } from 'src/app/enum/EventRepetition';
-import { CalendarDate, CalendarEvent } from 'src/app/interface/calendar';
+import { CalendarDate, CalendarDay, CalendarEvent } from 'src/app/interface/calendar';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
 import { HOURS_SELECTION } from 'src/app/variables/variables';
 
@@ -14,6 +14,7 @@ import { HOURS_SELECTION } from 'src/app/variables/variables';
 export class EventDetailsComponent implements AfterViewInit, OnInit{
   @Input() currentEvent: CalendarEvent | null = null;
   @Input() currentEventDate: CalendarDate | null = null;
+  @Input() currentCalendarDay: CalendarDay | null = null;
 
   //eventRepetitionEnum = EventRepetitionEnum;
   //eventRepetitionOptions: string[] = []
@@ -38,7 +39,6 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
       console.error("Something went wrong: EventDetails - " + this.currentEvent?.id + " : " + this.currentEventDate?.dateTime)
       return;
     }
-    eventDetailsElement.style.marginTop = "151px";
     /*
     if(eventDetailsElement.getBoundingClientRect().top + eventDetailsElement.getBoundingClientRect().height > window.innerHeight){
       eventDetailsElement.style.bottom = "40px";
@@ -95,7 +95,9 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     let newDate = new Date(eventDateDayInputElement.value);
     newDate.setHours(Number.parseInt(eventDateTimeSelectElement.value.split(":")[0]));
     newDate.setMinutes(Number.parseInt(eventDateTimeSelectElement.value.split(":")[1]));
-    console.log(newDate)
+
+    // console.log(newDate)
+
     if(newDate.getTime() <= Date.now()){
       this.setElementNotMatchingRules(
         "EventDate", eventDateTimeSelectElement, "eventDate cannot be set to the past here", eventDateDayInputElement
@@ -105,6 +107,49 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     else this.setElementMatchingRules(eventDateTimeSelectElement, eventDateDayInputElement);
 
     // TODO: additional check: We want to check if the date already is occupied
+    if(!this.currentCalendarDay){
+      console.error("Something went wrong: EventDetailsComponent : saveEventDetails()")
+      return;
+    }
+
+    const newDuration = Number.parseInt(eventDurationSelectElement.value);
+    let seenEventIds: number[] = [];
+
+    for(let calendarDate of this.currentCalendarDay.hoursPerDay){
+      // if calendarDate has an event and id is not the same as the edited/new event
+      if(calendarDate.event && !(calendarDate.event.id == this.currentEvent.id)){
+        // we now have to check if the newDate is interfering with the event in that time slot
+        // check if we have seen the event id. we compare events not time-slots
+        if(!seenEventIds.includes(calendarDate.event.id ? calendarDate.event.id : -2)){
+          seenEventIds.push(calendarDate.event.id!);
+        }else{
+          continue;
+        }
+
+        const newEndTime = newDate.getTime() + (1000 * 60 * newDuration);
+        const oldEndTime = calendarDate.dateTime.getTime() + (1000 * 60 * calendarDate.event.eventDuration);
+
+        // check if the start time is less and end time is greater then my time-slot time
+        if(newDate.getTime() < calendarDate.dateTime.getTime()
+          && (newEndTime > calendarDate.dateTime.getTime())){
+          console.error("The anticipated day is already occupied by another event (case 1 - endTime)")
+          return;
+        }
+
+        // if we get here, we know that the new end-time is not interfering with the old event
+        // so we check if the start-time is interfering
+        if( newEndTime > oldEndTime
+            && oldEndTime > newDate.getTime()){
+          console.error("The anticipated day is already occupied by another event (case 2 - startTime)")
+          return;
+        }
+        // check if the new Event is "surrounded" by the old event
+        if( newDate.getTime() >= calendarDate.dateTime.getTime() &&  oldEndTime >= newEndTime){
+          console.error("The anticipated day is already occupied by another event (case 3 - wrapper)")
+          return;
+        }
+      }
+    }
 
     if(!matchingRules) return;
      // eventDuration could be set to something different then the three possible options via HTML,
@@ -121,11 +166,11 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
         oldDate.dateTime = newDate;
       }
     }
-    this.currentEvent.eventDuration = Number.parseInt(eventDurationSelectElement.value);
+    this.currentEvent.eventDuration = newDuration;
+
     // TODO: Place of tutoring session not yet used, please set in backend
     this.currentEvent.eventPlace = eventPlaceSelectElement.value;
 
-    console.log(this.currentEvent.id)
     if(this.currentEvent.id) this.updateEvent()
     else this.saveEvent();
 

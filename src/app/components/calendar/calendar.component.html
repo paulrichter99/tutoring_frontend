@@ -78,6 +78,7 @@
               && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
               [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
               [currentEventDate]="hourPerDay"
+              [currentCalendarDay]="selectedDate"
             ></app-event-details>
             <div *ngIf="hourPerDay.event
                   && hourPerDay.event.id
