@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN = 'jwt_token';
+export const USER_DATA = 'userdata';
 
 export const HOURS_SELECTION = [
   "8:00", "8:30",
@@ -15,3 +16,10 @@ export const HOURS_SELECTION = [
 ]
 
 export const MIN_DAILY_HOUR = 8;
+
+export const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+export const WEEK_DAYS =  ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

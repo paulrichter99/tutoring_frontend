@@ -1,6 +1,8 @@
 import { Component, ElementRef, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/interface/user';
+import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
+import { ACCESS_TOKEN, USER_DATA } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-header',
@@ -15,19 +17,16 @@ export class HeaderComponent implements OnInit{
 
   dropdownIsOpen: boolean = false;
 
-  constructor(private userService: UserService){}
+  constructor(
+    private userService: UserService,
+    private storageService: StorageService){}
 
   user: User | null = null;
 
   ngOnInit(): void {
-    if(localStorage.getItem("jwt_token")){
-      this.userService.getUserData().subscribe({
-        next: (userData) => {
-          this.user = userData;
-          this.dropdown.nativeElement.style.display="block";
-        },
-        error: (e) => console.error(e)
-      })
+    this.user = this.storageService.getLocalUserData();
+    if(this.user){
+      this.dropdown.nativeElement.style.display="block";
     }
   }
   performDropdownClick(){
@@ -80,7 +79,8 @@ export class HeaderComponent implements OnInit{
 
   logout(){
     this.user = null;
-    localStorage.removeItem("jwt_token");
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem(USER_DATA)
     window.location.reload();
   }
 }

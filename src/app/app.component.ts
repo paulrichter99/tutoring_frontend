@@ -1,6 +1,9 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { slideInAnimation } from './components/shared/route-animation';
+import { User } from './interface/user';
+import { StorageService } from './services/storage.service';
+import { UserService } from './services/user.service';
 
 
 @Component({
@@ -16,9 +19,24 @@ export class AppComponent implements OnInit {
   title = 'tutoring_frontend';
   isMobile = false;
 
+  constructor(
+    private userService: UserService,
+    private storageService: StorageService){}
+
+  user: User | null = null;
+
   ngOnInit(): void {
     if(document.body.offsetWidth < 750){
       this.isMobile = true;
+    }
+    if(localStorage.getItem("jwt_token")){
+      this.userService.getUserData().subscribe({
+        next: (userData) => {
+          this.user = userData;
+          this.storageService.saveUserData(this.user!);
+        },
+        error: (e) => console.error(e)
+      })
     }
   }
 

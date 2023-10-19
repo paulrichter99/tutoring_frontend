@@ -239,8 +239,21 @@
 }
 
 .data-violation{
-  border: 1px solid #dc3545  !important;
+  border: 1px solid $error-color !important;
   border-radius: 5px !important;
+}
+
+.event-error{
+  display: flex;
+  align-items: center;
+  margin: 0 80px !important;
+  margin-top: 40px !important;
+
+  height: 40px;
+  .error-message{
+    color: $error-color;
+    line-height: 1.3rem;
+  }
 }
 
 /* Mobile version adjustments */

@@ -1,10 +1,12 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { elementAt } from 'rxjs';
 import { CalendarMonth, CalendarDate, CalendarData, CalendarEvent, CalendarDay } from 'src/app/interface/calendar';
 import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
+import { CalendarService } from 'src/app/services/calendar/calendar.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
-import { MIN_DAILY_HOUR } from 'src/app/variables/variables';
+import { MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-calendar',
@@ -16,11 +18,15 @@ export class CalendarComponent implements OnInit {
   @ViewChild('monthView', { static: true }) monthView!: ElementRef;
   @ViewChild('weekView', { static: true }) weekView!: ElementRef;
   @ViewChild('dayView', { static: true }) dayView!: ElementRef;
+  @ViewChild('todayView', { static: true }) todayView!: ElementRef;
+  @ViewChild('eventView', { static: true }) eventView!: ElementRef;
   @ViewChild('calendarSingleDayWrapper', { static: true }) calendarSingleDayWrapper!: ElementRef;
 
   @ViewChild('calendar', { static: true }) calendar!: ElementRef;
 
-  weekDays: string[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  @Input() dropDownStyle: string = "none";
+
+  weekDays: string[] = WEEK_DAYS;
   currentMonth!: CalendarMonth;
   calendarData: CalendarData | null = null;
   emptyCellsBefore: number[] = [];
@@ -38,11 +44,12 @@ export class CalendarComponent implements OnInit {
   currentUser: User | null = null;
 
   constructor(private calenderEventService: CalendarEventService,
-              private userService: UserService)
+              private storageService: StorageService,
+              public calendarService: CalendarService)
   { }
 
   ngOnInit() {
-    this.getAllEventsTest();
+    this.getAllEventsForUser();
     this.innerWidth = window.innerWidth;
     // Initialize the calendar when the component is created.
     this.currentMonth = this.getCurrentMonth();
@@ -58,11 +65,7 @@ export class CalendarComponent implements OnInit {
 
   // Function to get the name of the month based on its number (0-based).
   getMonthName(month: number): string {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months[month];
+    return MONTHS[month];
   }
 
   // Function to get the current month and year.
@@ -78,7 +81,6 @@ export class CalendarComponent implements OnInit {
 
     if(this.calendarData){
       this.calendarData.calendarDays = [];
-      this.calendarData.selectedDate = null;
     }
     this.emptyCellsBefore = [];
     this.emptyCellsAfter = [];
@@ -101,18 +103,25 @@ export class CalendarComponent implements OnInit {
     // Generate dates for the current month.
     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
       const date = new Date(this.currentMonth.year, this.currentMonth.month, i);
+
       var isSelected = this.selectedDate && date.toDateString() === this.selectedDate.date.toDateString();
       const isToday = date.toDateString() === new Date().toDateString();
       if(isToday && !this.selectedDate) isSelected = true;
 
       // add events to month/days -> month/day
       var hoursPerDay: CalendarDate[] = this.generateHoursPerDate(date);
+      const dayToAdd: CalendarDay = { date, isSelected, isToday, "hasEvent" : false,  hoursPerDay};
 
       // push the day to the calendarDays array
-      this.calendarData?.calendarDays.push({ date, isSelected, isToday, "hasEvent" : false,  hoursPerDay});
+      this.calendarData?.calendarDays.push(dayToAdd);
+
+      //set the selected day
+      if(isSelected){
+        this.selectedDate = dayToAdd;
+      }
     }
     // add the event to the corresponding dateTime, if matching
-    this.sortEventsIntoCalendar();
+    this.calendarService.sortEventsIntoCalendar(this.calendarEvents, this.calendarData, this.currentMonth);
 
     let a = 41;
     for(let i = 42; i > (this.calendarData!.calendarDays.length+this.emptyCellsBefore.length); i--){
@@ -121,50 +130,6 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  sortEventsIntoCalendar(){
-    if(!this.calendarEvents) return;
-
-    // loop through each calendarEvent
-    this.calendarEvents.forEach(calendarEvent => {
-      // since one calendarEvent can have multiple dates, we check if the item
-      //  matches with our current year and month
-      calendarEvent.eventDates.find(item => {
-        // if it matches, we have to assign it to the right day and time slot
-        if(
-          item.dateTime.getFullYear() == this.currentMonth.year &&
-          item.dateTime.getMonth() == this.currentMonth.month
-        ){
-          this.addEventToCalendarDay(calendarEvent, item);
-        }
-      })
-    })
-  }
-
-  addEventToCalendarDay(calendarEvent: CalendarEvent, calendarDate: CalendarDate){
-    // check if we have the correct day matching our found event date day
-    if(this.calendarData!.calendarDays[calendarDate.dateTime.getDate()-1]){
-      const correctDay = this.calendarData!.calendarDays[calendarDate.dateTime.getDate()-1]
-
-      // since we are sure this is the matching day, we now search for the correct time
-      var startIndex = (calendarDate.dateTime.getHours() - MIN_DAILY_HOUR)
-      if(calendarDate.dateTime.getMinutes() == 30){
-        startIndex += 0.5
-      }
-      startIndex *= 2;
-
-      // now we have to respect the duration as well
-      const endIndex = startIndex + (Math.ceil(calendarEvent.eventDuration / 30)) - 1;
-
-      // check the current time slot. We have to keep in mind, that the endIndex points to the end-time
-      //  since a hourPerDay is representing a timeSlot (12:00 - 12:30), we have to do endIndex -= 1
-      if(correctDay.hoursPerDay[startIndex].dateTime.toISOString() == calendarDate.dateTime.toISOString()){
-        for(let i = startIndex; i <= endIndex; i++){
-          correctDay.hoursPerDay[i].event = calendarEvent;
-          correctDay.hasEvent = true;
-        }
-      }
-    }
-  }
   // Function to generate the hours for every day from 8:00, 8:30 ... 19:00, 19:30
   generateHoursPerDate(date: Date){
     var arr: CalendarDate[] = [];
@@ -197,6 +162,11 @@ export class CalendarComponent implements OnInit {
     this.generateCalendar();
   }
 
+  setMonth(){
+    this.currentMonth.month = this.selectedDate!.date.getMonth();
+    this.generateCalendar();
+  }
+
   // Function to handle date selection.
   selectDay(selectedDate: CalendarDay) {
     if(!selectedDate) return
@@ -209,14 +179,17 @@ export class CalendarComponent implements OnInit {
     this.changeCalendarDisplayMode("day", this.selectedDate);
   }
 
+  // TODO: Complexity is very high and there are a lot of lines, maybe we can improve here
   changeCalendarDisplayMode(mode: string, selectedDate?: CalendarDay | null){
     if(this.currentCalendarViewMode == mode)
       return;
+
     this.currentCalendarViewMode = mode;
     this.monthView.nativeElement.classList.remove("active");
     this.weekView.nativeElement.classList.remove("active");
     this.dayView.nativeElement.classList.remove("active");
-    var newSelectDate: CalendarDay | null = selectedDate ? selectedDate : null;
+    this.todayView.nativeElement.classList.remove("active");
+    var newSelectedDate: CalendarDay | null = selectedDate ? selectedDate : this.selectedDate;
     var newTopForDayView = "100vh";
 
     // TODO: maybe instead of scrolling from bottom to top, imitate a component switch
@@ -230,55 +203,54 @@ export class CalendarComponent implements OnInit {
       case "week": this.weekView.nativeElement.classList.add("active"); break;
       case "day":
         this.dayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? "180px" : "115px";
+        newTopForDayView = this.innerWidth > 750? "200px" : "120px";
         if(this.selectedDate == null){
           var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
-          if(res) newSelectDate = res[0];
+          if(res) newSelectedDate = res[0];
         }
+        break;
+      case "today":
+        this.todayView.nativeElement.classList.add("active");
+        newTopForDayView = this.innerWidth > 750? "200px" : "120px";
+        var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
+        if(res) newSelectedDate = res[0];
+        this.calendarData!.calendarDays.forEach(day => {
+          if(day == newSelectedDate) day.isSelected = true;
+          else day.isSelected = false
+        })
         break;
       default: this.monthView.nativeElement.classList.add("active"); break;
     }
 
     this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
-    this.selectedDate = newSelectDate;
+    this.selectedDate = newSelectedDate;
 
   }
 
-  getEventsFromBackend(){
-    this.userService.getUserData().subscribe({
-      next: (data) => {
-        this.currentUser = <User>data;
-        this.calendarEvents = (<User>data)?.calendarEvents;
-        if(!this.anonymousCalendarEvents){
-          console.error("Something went wrong: CalendarComponent -> getEventsFromBackend()")
-        }
-        for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
-          if(!(this.calendarEvents.find((element) => element.id == anonymousCalendarEvent.id))){
-            this.calendarEvents.push(anonymousCalendarEvent);
-            this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
-          }
-        }
-        this.convertDateData();
-        this.generateCalendar();
-      },
-      error: (error) => {
-        this.calendarEvents = [];
-        this.generateCalendar();
+  getEventsFromUser(){
+    this.currentUser = this.storageService.getLocalUserData();
+
+    if(!this.anonymousCalendarEvents){
+      console.error("Something went wrong: CalendarComponent -> getEventsFromUser()")
+    }
+
+    if(!this.currentUser) {
+      this.calendarEvents = [];
+      for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
+          this.calendarEvents.push(anonymousCalendarEvent);
+          this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
       }
-    })
-  }
-
-  checkIfPartOfPreviousEvent(index: number): boolean{
-    var check: boolean = false;
-    if(index > 0){
-      if( this.selectedDate!.hoursPerDay[index-1].event &&
-          this.selectedDate!.hoursPerDay[index].event &&
-          (this.selectedDate!.hoursPerDay[index].event?.id == this.selectedDate!.hoursPerDay[index-1].event?.id)
-      ){
-        check = true;
+    }else{
+      this.calendarEvents = this.currentUser.calendarEvents;
+      for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
+        if(!(this.calendarEvents.find((element) => element.id == anonymousCalendarEvent.id))){
+          this.calendarEvents.push(anonymousCalendarEvent);
+          this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
+        }
       }
     }
-    return check;
+    this.convertDateData();
+    this.generateCalendar();
   }
 
   // this is more of a util function
@@ -322,20 +294,34 @@ export class CalendarComponent implements OnInit {
           "eventPlace":"home",
           "eventUsers": [this.currentUser!]
         }
-
     }
 
     if(selectedEventDateTime && !selectedEventDateTime.showEvent)
       selectedEventDateTime.showEvent = true;
   }
 
-  async getAllEventsTest(){
+  changeEventDetails(updatedEvent: CalendarEvent){
+    var eventToUpdate = this.calendarEvents?.findIndex((element) => element.id == updatedEvent.id);
+    if(eventToUpdate) {
+      this.calendarEvents![eventToUpdate] = updatedEvent
+    }else {
+      return;
+    }
+    this.generateCalendar();
+  }
+
+  getAllEventsForUser(){
     this.calenderEventService.getAllEventsForAnyUser().subscribe({
       next: data => {
         this.anonymousCalendarEvents = <CalendarEvent[]>data
-        this.getEventsFromBackend();
+        this.getEventsFromUser();
       },
       error: e => console.error(e)
     })
+  }
+
+  setSelectedDay(dayToAdd: number){
+    this.selectedDate?.date.setDate(this.selectedDate.date.getDate() + dayToAdd)
+    this.setMonth();
   }
 }

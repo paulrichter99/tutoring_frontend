@@ -1,11 +1,16 @@
 <div class="calendar-wrapper">
   <div class="calendar-actions">
     <ul>
+      <!-- (click)="changeCalendarDisplayMode('week')" -->
       <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-regular fa-calendar-days active"></i> </li>
-      <li (click)="changeCalendarDisplayMode('week')"> <i #weekView class="fa-solid fa-calendar-week"></i> </li>
-      <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-regular fa-calendar"></i> </li>
+      <li> <i #weekView class="fa-solid fa-calendar-week disabled"></i> </li>
+      <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-solid fa-calendar-day"></i> </li>
     </ul>
-    <button> <i class="fa-regular fa-calendar-check"></i> </button>
+    <ul>
+      <!-- (click)="changeCalendarDisplayMode('event')" -->
+      <li (click)="changeCalendarDisplayMode('today')"> <i #todayView class="fa-regular fa-calendar"></i></li>
+      <li> <i #eventView class="fa-regular fa-calendar-check disabled"></i> </li>
+    </ul>
   </div>
   <div class="calendar" #calendar>
     <div class="calendar-header">
@@ -47,7 +52,9 @@
   <div> </div>
   <div class="calendar-single-day" *ngIf="selectedDate">
     <div class="calendar-selected-date-header">
-      {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}}
+      <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-left"></i> </button>
+      <div> {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}} </div>
+      <button (click)="setSelectedDay(1)"> <i class="fa-solid fa-chevron-right"></i> </button>
     </div>
     <div class="time-slots">
       <div class="time-table-column times-column">
@@ -56,16 +63,10 @@
         </div>
       </div>
       <div class="time-table-column events-column">
-        <!--
-          TODO: Mobile view: take the whole screen instead of bordered view
-          -> It additionally seems that you can scroll the bare minimum in day view for some reason
-            ->  figure out how the scrolling is affected and fix this, so that scrolling is consistent across
-                user devices
-        -->
         <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
               class="time-table-row events-row"
               [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
-              [class.partOf-previous-event]="checkIfPartOfPreviousEvent(i)"
+              [class.partOf-previous-event]="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate)"
               [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
         >
           <div  class="event-slot"
@@ -73,12 +74,13 @@
                 [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
                 (click)="selectEvent(hourPerDay)">
             <app-event-details
-              *ngIf="checkIfPartOfPreviousEvent(i) == false
+              *ngIf="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate) == false
               && hourPerDay.showEvent == true
               && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
               [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
               [currentEventDate]="hourPerDay"
               [currentCalendarDay]="selectedDate"
+              (changeEventDetails)="changeEventDetails($event)"
             ></app-event-details>
             <div *ngIf="hourPerDay.event
                   && hourPerDay.event.id
