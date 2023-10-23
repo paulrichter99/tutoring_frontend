@@ -1,34 +1,34 @@
 <div class="calendar-wrapper">
   <div class="calendar-actions">
-    <ul>
+    <ul class="left-button-wrapper">
       <!-- (click)="changeCalendarDisplayMode('week')" -->
-      <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-regular fa-calendar-days active"></i> </li>
+      <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-solid fa-calendar-days active"></i> </li>
       <li> <i #weekView class="fa-solid fa-calendar-week disabled"></i> </li>
       <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-solid fa-calendar-day"></i> </li>
     </ul>
-    <ul>
-      <!-- (click)="changeCalendarDisplayMode('event')" -->
-      <li (click)="changeCalendarDisplayMode('today')"> <i #todayView class="fa-regular fa-calendar"></i></li>
-      <li> <i #eventView class="fa-regular fa-calendar-check disabled"></i> </li>
-    </ul>
-  </div>
-  <div class="calendar" #calendar>
-    <div class="calendar-header">
+    <div class="middle-wrapper">
       <button (click)="previousMonth()">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <h2>{{ currentMonth.year }} - {{ getMonthName(currentMonth.month) }}</h2>
+      <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div>
       <button (click)="nextMonth()">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
     </div>
+    <ul class="right-button-wrapper">
+      <!-- (click)="changeCalendarDisplayMode('event')" -->
+      <li (click)="changeCalendarDisplayMode('today')"> <i #todayView class="fa-solid fa-calendar-xmark"></i></li>
+      <li> <i #eventView class="fa-regular fa-calendar disabled"></i> </li>
+    </ul>
+  </div>
+  <div class="calendar" #calendar>
     <div class="calendar-weekdays">
       <div *ngFor="let day of weekDays" class="weekday"> <div> {{day}} </div> </div>
     </div>
     <div class="calendar-days">
       <!-- start with empty cells  to match the starting day of the month with weekday -->
       <div *ngFor="let cell of emptyCellsBefore" class="calendar-day outside-month">
-        {{ cell }}
+        <div>{{ cell }}</div>
       </div>
 
       <div
@@ -36,13 +36,12 @@
         class="calendar-day"
         [class.selected]="day.isSelected"
         [class.today]="day.isToday"
-        [class.has-event]="day.hasEvent"
         (click)="selectDay(day)"
       >
-        <div > {{ day.date.getDate() }} </div>
+        <div [class.has-event]="day.hasEvent"> {{ day.date.getDate() }} </div>
       </div>
       <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
-        {{cell}}
+        <div>{{ cell }}</div>
       </div>
     </div>
   </div>

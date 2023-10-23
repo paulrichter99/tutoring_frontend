@@ -276,6 +276,7 @@ export class CalendarComponent implements OnInit {
   }
 
   selectEvent(selectedEventDateTime: CalendarDate | null){
+    if(!this.currentUser){ return; }
     // we check if the selectEvent actually is meant to be a new event
     if(selectedEventDateTime?.event == null){
       // all times after 18:00 are only for the purpose of showing events, not for creating one at this time
@@ -301,11 +302,11 @@ export class CalendarComponent implements OnInit {
   }
 
   changeEventDetails(updatedEvent: CalendarEvent){
-    var eventToUpdate = this.calendarEvents?.findIndex((element) => element.id == updatedEvent.id);
-    if(eventToUpdate) {
+    var eventToUpdate = this.calendarEvents!.findIndex((element) => element.id == updatedEvent.id);
+    if(eventToUpdate > -1) {
       this.calendarEvents![eventToUpdate] = updatedEvent
     }else {
-      return;
+      this.calendarEvents!.push(updatedEvent);
     }
     this.generateCalendar();
   }

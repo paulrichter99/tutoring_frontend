@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CalendarDay, CalendarEvent } from '../interface/calendar';
+import { BASE_URL } from '../variables/variables';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarEventService {
 
-  public baseUrl = "http://localhost:8085/api";
+  public baseUrl = BASE_URL;
 
   constructor(private http: HttpClient) {
 
@@ -21,8 +22,8 @@ export class CalendarEventService {
     return this.http.get(this.baseUrl + "/calendarEvent/all/user").pipe();
   }
 
-  saveEvent(calendarEvent:CalendarEvent){
-    return this.http.post(this.baseUrl + "/calendarEvent", calendarEvent);
+  saveEvent(calendarEvent:CalendarEvent, isPrivate: boolean){
+    return this.http.post(this.baseUrl + "/calendarEvent?isPrivate=" + isPrivate, calendarEvent);
   }
 
   updateEvent(calendarEvent:CalendarEvent){

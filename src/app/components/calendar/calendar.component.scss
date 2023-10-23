@@ -16,7 +16,7 @@
 
 .calendar-wrapper {
   width: 100%;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 140px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,20 +37,20 @@
 }
 
 .calendar-actions {
-  width: 70%;
+  width: calc(100% - 60px);
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 
-  padding: 0 15%;
+  padding: 0 30px;
   height: 80px;
   min-height: 60px;
   margin: 0;
 
   background-color: $base-color-bg-secondary;
   ul {
-    width: 150px;
+    width: 180px;
     list-style: none;
     display: flex;
     justify-content: space-evenly;
@@ -66,13 +66,38 @@
       cursor: pointer;
     }
   }
-  button {
-    background-color: transparent;
-    cursor: pointer;
-    width: 150px;
-    font-size: 25px;
-    border: none;
+  .left-button-wrapper{
+    width: 160px;
+  }
+  .right-button-wrapper{
+    width: 160px;
+    justify-content: center;
+  }
+
+  .middle-wrapper{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: $base-color;
+    font-family: 'Roboto', sans-serif;
+
+    > div {
+      font-size: 24px;
+      font-weight: 600;
+      flex: 0.5;
+    }
+
+    button {
+      color: $base-color;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      width: 25px;
+      padding: 0;
+      outline: none;
+    }
   }
 }
 
@@ -80,80 +105,69 @@
   width: 90%;
   min-width: 300px;
   max-width: 1200px;
-  padding: 10px;
   font-family: 'Roboto', sans-serif;
-  border-radius:  30px;
-}
 
-.calendar-header {
+  flex: 1;
+  overflow: scroll;
+
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 50px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-
-  h2 {
-    width: 80%;
-  }
-
-  button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    width: 20%;
-    outline: none;
-  }
+  flex-direction: column;
+  justify-content: center;
 }
 
 .calendar-weekdays {
   display: flex;
-  background-color: $base-color-bg;
-  color: $base-color;
+  color: $base-color-bg;
   font-weight: bold;
-  border-radius: 5px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
+  height: 60px;
+  border: 1px solid rgba(#aaa, 0.6);
 
   .weekday {
+    max-height: 60px;
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    max-height: 80px;
     aspect-ratio: 1/1;
+    border-right: 1px solid rgba(#aaa, 0.6);
+  }
+  .weekday:last-child{
+    border: none;
   }
 }
 
 .calendar-days {
+  height: calc(100% - 140px);
+
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
   text-align: center;
+  border-left: 1px solid rgba(#aaa, 0.6);
 
   .calendar-day{
-    width: calc(70% - 30px);
-    margin: 0 10%;
-    margin-top: 5px;
-    margin-bottom: 5px;
-
-    padding: 15px;
+    height: calc(100% - 1px);
     display: flex;
     flex-direction: column;
 
     justify-content: left;
     align-items: flex-start;
-    max-height: 50px;
-    aspect-ratio: 1/1;
     cursor: pointer;
-    border-radius: 20px;
+
+    border-bottom: 1px solid rgba(#aaa, 0.6);
+    border-right: 1px solid rgba(#aaa, 0.6);
+    > div{
+      margin-left: 15px;
+      margin-top: 15px;
+    }
   }
 
   .outside-month {
     color: #aaa;
     font-weight: 400;
+    background-color: rgba(#aaa, 0.3);
   }
 }
 
@@ -161,16 +175,23 @@
   background-color: rgb(168, 168, 168);
   font-weight: 600;
   color: $base-color;
+  .has-event {
+    color: $base-color;
+  }
 }
 
 .has-event {
   color: $color-active-tab-dark;
+  font-weight: 600;
 }
 
 .selected{
-  background-color: $base-color-bg-secondary;
-  color: white;
+  background-color: rgba($base-color-bg-secondary, 0.9);
+  color: $base-color !important;
   font-weight: 600;
+  .has-event {
+    color: $base-color;
+  }
 }
 
 .active {
@@ -203,6 +224,7 @@
   font-weight: 600;
   margin-bottom: 20px;
   width: 40%;
+  font-size: 18px;
   display: flex;
   justify-content: space-around;
 }
@@ -308,7 +330,7 @@
 }
 
 .disabled{
-  color: rgb(20, 20, 20);
+  color: rgba($base-color, 0.2);
 }
 
 button {
@@ -319,19 +341,53 @@ button {
 /* Mobile version adjustments */
 @media (max-width: 750px){
   :host {
-    height: calc(100vh - 60px);
+    height: calc(100svh - 60px);
     top: 60px;
   }
 
+  .calendar-wrapper{
+    height: calc(100svh - 60px);
+  }
+
+  .calendar-weekdays {
+    color: $base-color-bg;
+    font-size: 14px;
+    .weekday {
+      height: 60px;
+      aspect-ratio: unset;
+    }
+  }
+
+  .calendar {
+    width: 100%;
+    height: calc(100svh - 120px);
+    display: flex;
+    flex-direction: column;
+    .calendar-days {
+      flex: 1;
+      overflow: hidden;
+
+      .calendar-day {
+        font-size: 14px;
+        margin: 0;
+        > div {
+          margin: 20% auto;
+        }
+      }
+      .outside-month{
+        background-color: rgba(#ccc, 0.3);
+      }
+    }
+  }
+
   .calendar-single-day-wrapper {
-    height: calc(100vh - 145px);
+    height: calc(100svh - 130px);
     top: 100vh;
   }
 
   .calendar-single-day{
     width: 100%;
     padding: 0;
-    padding-top: 30px;
 
     .time-slots{
       margin: 0;
@@ -340,30 +396,51 @@ button {
     }
   }
 
+
+  .calendar-selected-date-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    margin: 0;
+    width: 70%;
+  }
+
   .calendar-actions {
-    width: 80%;
-    padding: 0 10%;
+    width: calc(100% - 20px);
     height: 60px;
     min-height: 60px;
-    ul, button {
-      font-size: 20px;
+    padding: 0 10px;
+    justify-content: space-between;
+
+    ul {
+      font-size: 18px;
+      width: 150px;
       li {
         min-width: 30px;
         width: 30px;
       }
     }
-  }
 
-  .calendar-weekdays {
-    font-size: 12px;
-  }
-  .calendar-days{
-    .calendar-day {
-      font-size: 10px;
+    .middle-wrapper{
+      flex: 0.8;
       justify-content: center;
-      align-items: center;
-      padding: 15px;
-      margin: 0;
+      margin: 0 10px;
+      > div {
+        flex: 1;
+        font-size: 18px;
+        font-weight: 400;
+      }
+    }
+
+    .left-button-wrapper{
+      min-width: 90px;
+      width: 90px;
+    }
+    .right-button-wrapper{
+      justify-content: center;
+      min-width: 90px;
+      width: 90px;
     }
   }
 }

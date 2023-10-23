@@ -45,7 +45,7 @@ export class HeaderComponent implements OnInit{
   }
   performMobileDropdownClick() {
     if(!this.dropdownIsOpen){
-      this.fixedNavDropdown.nativeElement.style.top = "160px";
+      this.fixedNavDropdown.nativeElement.style.top = "100px";
       this.fixedNavBackground.nativeElement.style.display = "block";
 
     }else{

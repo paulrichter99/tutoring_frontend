@@ -77,6 +77,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     // repetition seems pretty hard to realize and is unnecessary atm, so we drop it for now
     // const eventRepeatingSelectElement = <HTMLSelectElement>document.getElementById("event-repeating-select");
     const eventPlaceSelectElement = <HTMLSelectElement>document.getElementById("event-place-select");
+    const eventPrivateInputElement = <HTMLInputElement>document.getElementById("event-private-input");
 
     var matchingRules = true;
     var tempMatchingRules = true;
@@ -129,11 +130,11 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     updatedEvent.eventPlace = eventPlaceSelectElement.value;
 
     if(updatedEvent.id) this.updateEvent(updatedEvent)
-    else this.saveEvent(updatedEvent);
+    else this.saveEvent(updatedEvent, eventPrivateInputElement.checked);
   }
 
-  saveEvent(updatedEvent: CalendarEvent){
-    this.calendarEventService.saveEvent(updatedEvent).subscribe({
+  saveEvent(updatedEvent: CalendarEvent, isPrivate: boolean){
+    this.calendarEventService.saveEvent(updatedEvent, isPrivate).subscribe({
       next: (data) => {
         this.currentEvent = <CalendarEvent>data;
         this.convertDateData();
@@ -165,7 +166,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
       calendarDate.dateTime = angularDate;
     })
 
-    this.changeEventDetails.next(this.currentEvent)
+    this.changeEventDetails.next(this.currentEvent);
 
     this.closeEventDetails();
   }
