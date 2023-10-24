@@ -67,4 +67,15 @@ export class CalendarService {
       })
     })
   }
+
+  calculateTime(date: Date, duration: number){
+    var endTime = "";
+    const fullHour = Math.floor((date.getHours() * 60 + date.getMinutes() + duration) / 30 / 2);
+    var minutes = ((date.getMinutes() + duration) % 60).toString()
+
+    if(minutes == "0") minutes = "00"
+
+    endTime = fullHour.toString() + ":" + minutes.toString()
+    return endTime
+  }
 }

@@ -6,7 +6,8 @@
   <div class="event-details event-form" *ngIf="this.currentEvent && this.currentEventDate" id='event-details'>
     <div class="event-header">
       <button (click)="closeEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-xmark"></i> </button>
-      <div> Termin bearbeiten </div>
+      <div *ngIf="this.currentEvent.id && this.currentEvent.id > 0"> Termin bearbeiten </div>
+      <div *ngIf="!this.currentEvent.id || this.currentEvent.id <= 0"> Termin erstellen </div>
       <button (click)="saveEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-check"></i> </button>
     </div>
     <div class="event-name">

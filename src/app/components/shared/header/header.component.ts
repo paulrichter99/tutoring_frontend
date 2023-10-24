@@ -2,7 +2,7 @@ import { Component, ElementRef, HostBinding, OnInit, ViewChild } from '@angular/
 import { User } from 'src/app/interface/user';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
-import { ACCESS_TOKEN, USER_DATA } from 'src/app/variables/variables';
+import { ACCESS_TOKEN, HEADER_HEIGHT_MOBILE, USER_DATA } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-header',
@@ -45,7 +45,7 @@ export class HeaderComponent implements OnInit{
   }
   performMobileDropdownClick() {
     if(!this.dropdownIsOpen){
-      this.fixedNavDropdown.nativeElement.style.top = "100px";
+      this.fixedNavDropdown.nativeElement.style.top = (HEADER_HEIGHT_MOBILE+30) + "px";
       this.fixedNavBackground.nativeElement.style.display = "block";
 
     }else{

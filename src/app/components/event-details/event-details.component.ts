@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { EventRepetitionEnum } from 'src/app/enum/EventRepetition';
 import { CalendarDate, CalendarDay, CalendarEvent } from 'src/app/interface/calendar';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
-import { HOURS_SELECTION } from 'src/app/variables/variables';
+import { HOURS_SELECTION, LOGGING } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-event-details',
@@ -19,6 +19,8 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
   @Input() currentCalendarDay: CalendarDay | null = null;
 
   @Output() changeEventDetails = new EventEmitter<CalendarEvent>();
+
+  logging = LOGGING;
 
   // this is not used yet
   //eventRepetitionEnum = EventRepetitionEnum;
@@ -116,11 +118,13 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     // keep in mind that data is processed and validated in the backend a second time
     if(!matchingRules) return;
 
-    var updatedEvent: CalendarEvent = { ...this.currentEvent!}
+    const oldEventCopy = JSON.stringify(this.currentEvent!)
+    var updatedEvent: CalendarEvent = JSON.parse(oldEventCopy);
     //set event values according to rules
     updatedEvent.eventName = eventNameInputElement.value;
     for(let oldDate of updatedEvent.eventDates){
-      if(oldDate.dateTime.getTime() == this.currentEventDate?.dateTime.getTime()){
+      var date: Date = new Date(oldDate.dateTime);
+      if(date.getTime() == this.currentEventDate?.dateTime.getTime()){
         oldDate.dateTime = newDate;
       }
     }
@@ -132,6 +136,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     if(updatedEvent.id) this.updateEvent(updatedEvent)
     else this.saveEvent(updatedEvent, eventPrivateInputElement.checked);
   }
+
 
   saveEvent(updatedEvent: CalendarEvent, isPrivate: boolean){
     this.calendarEventService.saveEvent(updatedEvent, isPrivate).subscribe({
@@ -172,7 +177,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
   }
 
   setElementNotMatchingRules(type: string, elements: HTMLElement[], reason: string){
-    console.error(`${type} is not matching the rules: ${reason}`);
+    if(this.logging) console.error(`${type} is not matching the rules: ${reason}`);
     this.errorMessage = `The Event is not matching the rules: ${reason}`;
 
     elements.forEach((e) => e.classList.add("data-violation"))
@@ -232,8 +237,15 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
 
   handleHttpErrorRequest(e: any){
     if(e.error.includes("DATE_ALREADY_OCCUPIED")){
-      console.error("The anticipated day is already occupied by another event (message from backend)")
+      if(this.logging) console.error("The anticipated day is already occupied by another event (message from backend)")
 
+      const eventDateTimeSelectElement = <HTMLSelectElement>document.getElementById("event-date-time-select");
+      const eventDateDayInputElement = <HTMLInputElement>document.getElementById("event-date-day-input");
+      this.setElementNotMatchingRules(
+        "EventDate",
+        Array.of(eventDateTimeSelectElement, <HTMLElement>eventDateDayInputElement),
+        "The event's date may not be in the past!"
+      );
       this.errorMessage = "The anticipated day is already occupied by another event!"
     }
   }

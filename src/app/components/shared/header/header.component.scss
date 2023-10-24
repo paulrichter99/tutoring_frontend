@@ -10,7 +10,7 @@ header {
   font-size: 20px;
   font-family: 'Roboto', sans-serif;
   letter-spacing: 1px;
-  height: 120px;
+  height: $header-height;
 }
 
 .nav-dropdown {
@@ -122,7 +122,7 @@ header {
     transition: margin-right 0.3s ease-in-out;
 
     .dropdown-greeting{
-      height: 120px;
+      height: $header-height;
       background-color: $dropdown-background;
       display: flex;
       justify-content: center;
@@ -171,7 +171,7 @@ header {
 
 @media (max-width: 750px){
   header{
-    height: 60px;
+    height: $header-height-mobile;
   }
 
   .logo img {

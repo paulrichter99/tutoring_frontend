@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CalendarDay, CalendarEvent } from '../interface/calendar';
-import { BASE_URL } from '../variables/variables';
+import { BASE_URL, LOGGING } from '../variables/variables';
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +55,7 @@ export class CalendarEventService {
         // check if the start time is less and end time is greater then my time-slot time
         if(newDate.getTime() < calendarDate.dateTime.getTime()
           && (newEndTime > calendarDate.dateTime.getTime())){
-          console.error("The anticipated day is already occupied by another event (case 1 - endTime)")
+          if(LOGGING) console.error("The anticipated day is already occupied by another event (case 1 - endTime)")
           return false;
         }
 
@@ -63,12 +63,12 @@ export class CalendarEventService {
         // so we check if the start-time is interfering
         if( newEndTime > oldEndTime
             && oldEndTime > newDate.getTime()){
-          console.error("The anticipated day is already occupied by another event (case 2 - startTime)")
+          if(LOGGING) console.error("The anticipated day is already occupied by another event (case 2 - startTime)")
           return false;
         }
         // check if the new Event is "surrounded" by the old event
         if( newDate.getTime() >= calendarDate.dateTime.getTime() &&  oldEndTime >= newEndTime){
-          console.error("The anticipated day is already occupied by another event (case 3 - wrapper)")
+          if(LOGGING) console.error("The anticipated day is already occupied by another event (case 3 - wrapper)")
           return false;
         }
       }

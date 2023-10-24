@@ -6,7 +6,8 @@ import { CalendarEventService } from 'src/app/services/calendar-event.service';
 import { CalendarService } from 'src/app/services/calendar/calendar.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
-import { MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
+import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE, MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
+import { DayViewComponent } from './day-view/day-view.component';
 
 @Component({
   selector: 'app-calendar',
@@ -16,11 +17,11 @@ import { MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
 
 export class CalendarComponent implements OnInit {
   @ViewChild('monthView', { static: true }) monthView!: ElementRef;
-  @ViewChild('weekView', { static: true }) weekView!: ElementRef;
+  // @ViewChild('weekView', { static: true }) weekView!: ElementRef;
   @ViewChild('dayView', { static: true }) dayView!: ElementRef;
   @ViewChild('todayView', { static: true }) todayView!: ElementRef;
-  @ViewChild('eventView', { static: true }) eventView!: ElementRef;
-  @ViewChild('calendarSingleDayWrapper', { static: true }) calendarSingleDayWrapper!: ElementRef;
+  // @ViewChild('eventView', { static: true }) eventView!: ElementRef;
+  @ViewChild('calendarSingleDayWrapper') calendarSingleDayWrapper!: DayViewComponent;
 
   @ViewChild('calendar', { static: true }) calendar!: ElementRef;
 
@@ -186,7 +187,7 @@ export class CalendarComponent implements OnInit {
 
     this.currentCalendarViewMode = mode;
     this.monthView.nativeElement.classList.remove("active");
-    this.weekView.nativeElement.classList.remove("active");
+    // this.weekView.nativeElement.classList.remove("active");
     this.dayView.nativeElement.classList.remove("active");
     this.todayView.nativeElement.classList.remove("active");
     var newSelectedDate: CalendarDay | null = selectedDate ? selectedDate : this.selectedDate;
@@ -200,10 +201,10 @@ export class CalendarComponent implements OnInit {
       case "month":
         this.monthView.nativeElement.classList.add("active");
         break;
-      case "week": this.weekView.nativeElement.classList.add("active"); break;
+      // case "week": this.weekView.nativeElement.classList.add("active"); break;
       case "day":
         this.dayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? "200px" : "120px";
+        newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
         if(this.selectedDate == null){
           var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
           if(res) newSelectedDate = res[0];
@@ -211,7 +212,7 @@ export class CalendarComponent implements OnInit {
         break;
       case "today":
         this.todayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? "200px" : "120px";
+        newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
         var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
         if(res) newSelectedDate = res[0];
         this.calendarData!.calendarDays.forEach(day => {
@@ -221,8 +222,9 @@ export class CalendarComponent implements OnInit {
         break;
       default: this.monthView.nativeElement.classList.add("active"); break;
     }
+    this.calendarSingleDayWrapper.setTopStyle(newTopForDayView);
+    // this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
 
-    this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
     this.selectedDate = newSelectedDate;
 
   }
@@ -261,44 +263,6 @@ export class CalendarComponent implements OnInit {
         calendarDate.dateTime = angularDate;
       })
     })
-  }
-
-  // this is more of a util function
-  calculateTime(date: Date, duration: number){
-    var endTime = "";
-    const fullHour = Math.floor((date.getHours() * 60 + date.getMinutes() + duration) / 30 / 2);
-    var minutes = ((date.getMinutes() + duration) % 60).toString()
-
-    if(minutes == "0") minutes = "00"
-
-    endTime = fullHour.toString() + ":" + minutes.toString()
-    return endTime
-  }
-
-  selectEvent(selectedEventDateTime: CalendarDate | null){
-    if(!this.currentUser){ return; }
-    // we check if the selectEvent actually is meant to be a new event
-    if(selectedEventDateTime?.event == null){
-      // all times after 18:00 are only for the purpose of showing events, not for creating one at this time
-      // therefore, we will set the max time to 18:00
-      if(
-        (selectedEventDateTime?.dateTime.getHours()! == 18 && selectedEventDateTime?.dateTime.getMinutes()! != 0)
-        || selectedEventDateTime?.dateTime.getHours()! > 18){
-        selectedEventDateTime?.dateTime.setHours(18);
-        selectedEventDateTime?.dateTime.setMinutes(0);
-      }
-      selectedEventDateTime!.event =
-        { "eventName": "",
-          "eventDates": [ {"dateTime": selectedEventDateTime!.dateTime} ],
-          "eventDescription": "",
-          "eventDuration": 60,
-          "eventPlace":"home",
-          "eventUsers": [this.currentUser!]
-        }
-    }
-
-    if(selectedEventDateTime && !selectedEventDateTime.showEvent)
-      selectedEventDateTime.showEvent = true;
   }
 
   changeEventDetails(updatedEvent: CalendarEvent){

@@ -1,0 +1,58 @@
+<div class="calendar-single-day-wrapper" #calendarSingleDayWrapper>
+  <!-- TODO: Choose next day from here / navigation -->
+  <div> </div>
+  <div class="calendar-single-day" *ngIf="this.selectedDate">
+    <div class="calendar-selected-date-header">
+      <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-up icon-previous-day"></i> </button>
+      <button (click)="setSelectedDay(1)"> <i class="fa-solid fa-chevron-down icon-next-day"></i> </button>
+      <div> {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}} </div>
+    </div>
+    <div class="time-slots">
+      <div class="time-table-column times-column">
+        <div *ngFor="let hourPerDay of selectedDate.hoursPerDay" class="time-table-row times-row">
+          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }} </div> </div>
+        </div>
+      </div>
+      <div class="time-table-column events-column">
+        <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
+              class="time-table-row events-row"
+              [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
+              [class.partOf-previous-event]="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate)"
+              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
+        >
+          <div  class="event-slot"
+                [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
+                [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
+                (click)="selectEvent(hourPerDay)"
+          >
+            <app-event-details
+              *ngIf="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate) == false
+              && hourPerDay.showEvent == true
+              && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
+              [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
+              [currentEventDate]="hourPerDay"
+              [currentCalendarDay]="selectedDate"
+              (changeEventDetails)="changeEventDetails($event)"
+            ></app-event-details>
+            <div *ngIf="hourPerDay.event
+                  && hourPerDay.event.id
+                  && !(hourPerDay.event.isAnonymousEvent)"
+                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
+            >
+              {{hourPerDay.event.eventName}}
+              <div>
+                &nbsp; | &nbsp; {{calendarService.calculateTime(hourPerDay.dateTime, 0)}} Uhr -
+                {{calendarService.calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
+              </div>
+            </div>
+            <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"
+                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
+            >
+                  Bereits blockiert
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

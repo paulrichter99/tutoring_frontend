@@ -274,8 +274,8 @@
 
   .event-details{
     position: fixed;
-    top: 60px;
-    height: calc(100vh - 60px);
+    top: $header-height-mobile;
+    height: calc(100vh - $header-height-mobile);
     left: 0;
     width: 100%;
     max-width: 100%;

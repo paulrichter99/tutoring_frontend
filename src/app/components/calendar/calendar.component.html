@@ -1,27 +1,44 @@
 <div class="calendar-wrapper">
   <div class="calendar-actions">
-    <ul class="left-button-wrapper">
-      <!-- (click)="changeCalendarDisplayMode('week')" -->
-      <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-solid fa-calendar-days active"></i> </li>
-      <li> <i #weekView class="fa-solid fa-calendar-week disabled"></i> </li>
-      <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-solid fa-calendar-day"></i> </li>
-    </ul>
-    <div class="middle-wrapper">
-      <button (click)="previousMonth()">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div>
-      <button (click)="nextMonth()">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
+    <div class="upper-wrapper">
+      <ul>
+        <!-- (click)="changeCalendarDisplayMode('week')" -->
+        <li #monthView (click)="changeCalendarDisplayMode('month')" class="active">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span class="calendar-view-text"> Monat </span>
+        </li>
+        <li #weekView class="hidden">
+          <i #weekView class="fa-solid fa-calendar-week disabled"></i>
+          <span class="calendar-view-text"> Woche </span>
+        </li>
+        <li #dayView (click)="changeCalendarDisplayMode('day')">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span class="calendar-view-text"> Tag </span>
+        </li>
+        <li #todayView (click)="changeCalendarDisplayMode('today')">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <span class="calendar-view-text"> Heute </span>
+        </li>
+        <!-- (click)="changeCalendarDisplayMode('event')" -->
+        <li #eventView class="hidden">
+          <i class="fa-regular fa-calendar disabled"></i>
+          <span class="calendar-view-text"> Events </span>
+        </li>
+      </ul>
     </div>
-    <ul class="right-button-wrapper">
-      <!-- (click)="changeCalendarDisplayMode('event')" -->
-      <li (click)="changeCalendarDisplayMode('today')"> <i #todayView class="fa-solid fa-calendar-xmark"></i></li>
-      <li> <i #eventView class="fa-regular fa-calendar disabled"></i> </li>
-    </ul>
+
   </div>
   <div class="calendar" #calendar>
+    <div class="calendar-month-actions">
+      <button (click)="previousMonth()">
+        <i class="fa-solid fa-chevron-up icon-previous-month"></i>
+      </button>
+      <button (click)="nextMonth()">
+        <i class="fa-solid fa-chevron-down icon-next-month"></i>
+      </button>
+      <!-- TODO: Make this a dropdown selection -->
+      <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div>
+    </div>
     <div class="calendar-weekdays">
       <div *ngFor="let day of weekDays" class="weekday"> <div> {{day}} </div> </div>
     </div>
@@ -46,57 +63,10 @@
     </div>
   </div>
 </div>
-<div class="calendar-single-day-wrapper" #calendarSingleDayWrapper>
-  <!-- TODO: Choose next day from here / navigation -->
-  <div> </div>
-  <div class="calendar-single-day" *ngIf="selectedDate">
-    <div class="calendar-selected-date-header">
-      <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-left"></i> </button>
-      <div> {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}} </div>
-      <button (click)="setSelectedDay(1)"> <i class="fa-solid fa-chevron-right"></i> </button>
-    </div>
-    <div class="time-slots">
-      <div class="time-table-column times-column">
-        <div *ngFor="let hourPerDay of selectedDate.hoursPerDay" class="time-table-row times-row">
-          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }} </div> </div>
-        </div>
-      </div>
-      <div class="time-table-column events-column">
-        <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
-              class="time-table-row events-row"
-              [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
-              [class.partOf-previous-event]="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate)"
-              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
-        >
-          <div  class="event-slot"
-                [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
-                [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
-                (click)="selectEvent(hourPerDay)">
-            <app-event-details
-              *ngIf="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate) == false
-              && hourPerDay.showEvent == true
-              && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
-              [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
-              [currentEventDate]="hourPerDay"
-              [currentCalendarDay]="selectedDate"
-              (changeEventDetails)="changeEventDetails($event)"
-            ></app-event-details>
-            <div *ngIf="hourPerDay.event
-                  && hourPerDay.event.id
-                  && !(hourPerDay.event.isAnonymousEvent)"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
-            >
-              {{hourPerDay.event.eventName}}
-              <div>
-                &nbsp; | &nbsp; {{calculateTime(hourPerDay.dateTime, 0)}} Uhr -
-                {{calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
-              </div>
-            </div>
-            <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"> Bereits blockiert</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-day-view
+  #calendarSingleDayWrapper
+  [selectedDate]="this.selectedDate"
+  [currentUser]="this.currentUser"
+  (setSelectedDayEmitter)="setSelectedDay($event)"
+  (changeEventDetailsEmitter)="changeEventDetails($event)"
+></app-day-view>
