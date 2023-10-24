@@ -76,9 +76,10 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     const eventDateDayInputElement = <HTMLInputElement>document.getElementById("event-date-day-input");
     const eventDateTimeSelectElement = <HTMLSelectElement>document.getElementById("event-date-time-select");
     const eventDurationSelectElement = <HTMLSelectElement>document.getElementById("event-duration-select");
+    /* not yet used */
     // repetition seems pretty hard to realize and is unnecessary atm, so we drop it for now
     // const eventRepeatingSelectElement = <HTMLSelectElement>document.getElementById("event-repeating-select");
-    const eventPlaceSelectElement = <HTMLSelectElement>document.getElementById("event-place-select");
+    // const eventPlaceSelectElement = <HTMLSelectElement>document.getElementById("event-place-select");
     const eventPrivateInputElement = <HTMLInputElement>document.getElementById("event-private-input");
 
     var matchingRules = true;
@@ -131,7 +132,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     updatedEvent.eventDuration = Number.parseInt(eventDurationSelectElement.value);
 
     // TODO: Place of tutoring session not yet used, please set in backend
-    updatedEvent.eventPlace = eventPlaceSelectElement.value;
+    // updatedEvent.eventPlace = eventPlaceSelectElement.value;
 
     if(updatedEvent.id) this.updateEvent(updatedEvent)
     else this.saveEvent(updatedEvent, eventPrivateInputElement.checked);

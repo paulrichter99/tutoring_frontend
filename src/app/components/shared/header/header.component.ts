@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/interface/user';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
@@ -9,26 +9,18 @@ import { ACCESS_TOKEN, HEADER_HEIGHT_MOBILE, USER_DATA } from 'src/app/variables
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent{
   @ViewChild('fixedNavBackground', { static: true }) fixedNavBackground!: ElementRef;
   @ViewChild('fixedNavDropdown', { static: true }) fixedNavDropdown!: ElementRef;
   @ViewChild('dropdownContent', { static: true }) dropdownContent!: ElementRef;
-  @ViewChild('dropdown', { static: true }) dropdown!: ElementRef;
+
+  @Input() user: User | null = null;
 
   dropdownIsOpen: boolean = false;
 
   constructor(
     private userService: UserService,
     private storageService: StorageService){}
-
-  user: User | null = null;
-
-  ngOnInit(): void {
-    this.user = this.storageService.getLocalUserData();
-    if(this.user){
-      this.dropdown.nativeElement.style.display="block";
-    }
-  }
   performDropdownClick(){
     if(window.innerWidth < 750){
       this.performMobileDropdownClick();

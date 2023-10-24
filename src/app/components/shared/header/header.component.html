@@ -23,7 +23,7 @@
   <input *ngIf="this.user == null" type="button" class="login-button" value="Login" (click)="openLoginModal()">
 
   <!--this is used for the dropdown for web-view (screen > 750px)-->
-  <ul class="dropdown" #dropdown>
+  <ul class="dropdown" #dropdown [class.user-present]="this.user">
     <li class="nav-item">
       <button class="nav-dropdown-btn" (click)="performDropdownClick()"> <i class="fa-solid fa-bars"> </i> </button>
       <div class="dropdown-content" #dropdownContent>

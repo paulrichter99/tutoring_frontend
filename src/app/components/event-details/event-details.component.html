@@ -60,7 +60,7 @@
       </select>
     </div>
 
-    <div class="event-private"
+    <div *ngIf="!this.currentEvent.id" class="event-private"
       title="Private Termine zeigen Tutoren, dass du in diesem Slot nicht verfügbar bist (Bereits blockiert).
       Wenn diese Option nicht ausgewählt ist, erstellst du automatisch einen Nachhilfetermin!">
       <label> <i class="fi fi-rr-lock"></i> </label>

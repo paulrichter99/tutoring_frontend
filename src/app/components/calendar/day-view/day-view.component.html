@@ -3,8 +3,8 @@
   <div> </div>
   <div class="calendar-single-day" *ngIf="this.selectedDate">
     <div class="calendar-selected-date-header">
-      <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-up icon-previous-day"></i> </button>
-      <button (click)="setSelectedDay(1)"> <i class="fa-solid fa-chevron-down icon-next-day"></i> </button>
+      <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-left"></i> </button>
+      <button (click)="setSelectedDay(1)"> <i class="fa-solid fa-chevron-right"></i> </button>
       <div> {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}} </div>
     </div>
     <div class="time-slots">

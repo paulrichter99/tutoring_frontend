@@ -38,6 +38,7 @@ export class AppComponent implements OnInit {
         error: (e) => console.error(e)
       })
     }
+    this.user = this.storageService.getLocalUserData();
   }
 
   @HostListener('window:resize', ['$event'])

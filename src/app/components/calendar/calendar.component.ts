@@ -287,6 +287,11 @@ export class CalendarComponent implements OnInit {
 
   setSelectedDay(dayToAdd: number){
     this.selectedDate?.date.setDate(this.selectedDate.date.getDate() + dayToAdd)
+    if(this.selectedDate?.date.getDate() == new Date().getDate()){
+      this.changeCalendarDisplayMode("today");
+    }else{
+      this.changeCalendarDisplayMode("day");
+    }
     this.setMonth();
   }
 }
