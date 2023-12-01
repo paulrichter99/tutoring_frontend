@@ -32,7 +32,9 @@ export class CalendarComponent implements OnInit {
   calendarData: CalendarData | null = null;
   emptyCellsBefore: number[] = [];
   emptyCellsAfter: number[] = [];
+
   selectedDate: CalendarDay | null = null;
+  currentDay: CalendarDay | null = null;
 
   calendarEvents: CalendarEvent[] | null = null;
   anonymousCalendarEvents: CalendarEvent[] | null = null;
@@ -120,6 +122,9 @@ export class CalendarComponent implements OnInit {
       if(isSelected){
         this.selectedDate = dayToAdd;
       }
+      if(isToday){
+        this.currentDay = dayToAdd;
+      }
     }
     // add the event to the corresponding dateTime, if matching
     this.calendarService.sortEventsIntoCalendar(this.calendarEvents, this.calendarData, this.currentMonth);
@@ -164,7 +169,10 @@ export class CalendarComponent implements OnInit {
   }
 
   setMonth(){
-    this.currentMonth.month = this.selectedDate!.date.getMonth();
+    if(!(this.currentMonth.month == this.selectedDate?.date.getMonth())){
+      this.currentMonth.month = this.selectedDate!.date.getMonth();
+      this.currentMonth.year = this.selectedDate!.date.getFullYear();
+    }
     this.generateCalendar();
   }
 
@@ -205,28 +213,29 @@ export class CalendarComponent implements OnInit {
       case "day":
         this.dayView.nativeElement.classList.add("active");
         newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
-        if(this.selectedDate == null){
-          var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
-          if(res) newSelectedDate = res[0];
-        }
+
         break;
       case "today":
         this.todayView.nativeElement.classList.add("active");
         newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
-        var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
-        if(res) newSelectedDate = res[0];
-        this.calendarData!.calendarDays.forEach(day => {
-          if(day == newSelectedDate) day.isSelected = true;
-          else day.isSelected = false
-        })
+
+        newSelectedDate = this.currentDay;
+
         break;
       default: this.monthView.nativeElement.classList.add("active"); break;
     }
     this.calendarSingleDayWrapper.setTopStyle(newTopForDayView);
     // this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
-
     this.selectedDate = newSelectedDate;
 
+    // we are not regenerating the calendar here, to stay in the selected month when switching modes.
+    // if we always want to switch to the month of the selected date, simply comment in the line below
+    // if we want to have buttons to jump to the current month, just call this.setMonth() from any function
+    // this.setMonth();
+
+    // Note: if we want a jump to current month and a separate one for the selectedDate, but keep the current date
+    // when jumping to current month, we have to differ methods (not setting this.selectedDate but
+    //  rather use this.currentDate)
   }
 
   getEventsFromUser(){
@@ -287,11 +296,31 @@ export class CalendarComponent implements OnInit {
 
   setSelectedDay(dayToAdd: number){
     this.selectedDate?.date.setDate(this.selectedDate.date.getDate() + dayToAdd)
-    if(this.selectedDate?.date.getDate() == new Date().getDate()){
+    this.setMonth();
+
+    if(this.hasDateSameDay(this.selectedDate?.date, new Date())){
       this.changeCalendarDisplayMode("today");
     }else{
       this.changeCalendarDisplayMode("day");
     }
-    this.setMonth();
+
+    this.calendarData?.calendarDays.forEach(day => {
+      //set the selected day
+      if(this.hasDateSameDay(this.selectedDate?.date, day.date)){
+        this.selectedDate = day;
+      }
+    })
+  }
+
+  hasDateSameDay(firstDate: Date | undefined, secondDate: Date | undefined): boolean{
+    if(!firstDate || !secondDate) return false;
+    else if(
+      (firstDate.getDate() == secondDate.getDate())
+      && (firstDate.getMonth() == secondDate.getMonth())
+      && (firstDate.getFullYear() == secondDate.getFullYear())
+    ){
+      return true;
+    }
+    return false;
   }
 }

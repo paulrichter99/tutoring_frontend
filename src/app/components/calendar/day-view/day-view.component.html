@@ -1,6 +1,5 @@
 <div class="calendar-single-day-wrapper" #calendarSingleDayWrapper>
   <!-- TODO: Choose next day from here / navigation -->
-  <div> </div>
   <div class="calendar-single-day" *ngIf="this.selectedDate">
     <div class="calendar-selected-date-header">
       <button (click)="setSelectedDay(-1)"> <i class="fa-solid fa-chevron-left"></i> </button>
@@ -23,6 +22,7 @@
           <div  class="event-slot"
                 [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
                 [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
+                [class.hoverable]="this.currentUser"
                 (click)="selectEvent(hourPerDay)"
           >
             <app-event-details

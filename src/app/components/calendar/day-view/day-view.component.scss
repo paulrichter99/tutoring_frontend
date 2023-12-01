@@ -90,10 +90,11 @@
     height: 29px;
   }
 
-  .empty-event-slot:hover{
+  .empty-event-slot.hoverable:hover{
     background-color: rgba(#ccc,0.6);
   }
-  .filled-event-slot:hover{
+
+  .filled-event-slot.hoverable:hover{
     background-color: rgba($base-color-bg-light, 0.9);
   }
 
