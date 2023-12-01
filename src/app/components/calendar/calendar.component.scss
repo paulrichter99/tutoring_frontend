@@ -184,6 +184,11 @@
     }
   }
 
+  .day-hoverable:hover {
+    font-weight: 600;
+    background-color: rgba(#f0f0f0, 0.6);
+  }
+
   .outside-month {
     color: #aaa;
     font-weight: 400;

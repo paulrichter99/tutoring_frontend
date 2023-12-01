@@ -10,7 +10,7 @@
     <div class="time-slots">
       <div class="time-table-column times-column">
         <div *ngFor="let hourPerDay of selectedDate.hoursPerDay" class="time-table-row times-row">
-          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }} </div> </div>
+          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }}:00 </div> </div>
         </div>
       </div>
       <div class="time-table-column events-column">

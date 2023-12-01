@@ -53,6 +53,7 @@
         class="calendar-day"
         [class.selected]="day.isSelected"
         [class.today]="day.isToday"
+        [class.day-hoverable]="!day.isSelected && !day.isToday"
         (click)="selectDay(day)"
       >
         <div [class.has-event]="day.hasEvent"> {{ day.date.getDate() }} </div>
