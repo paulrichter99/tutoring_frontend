@@ -108,7 +108,7 @@ export class CalendarComponent implements OnInit {
       const date = new Date(this.currentMonth.year, this.currentMonth.month, i);
 
       var isSelected = this.selectedDate && date.toDateString() === this.selectedDate.date.toDateString();
-      const isToday = date.toDateString() === new Date().toDateString();
+      const isToday = this.hasDateSameDay(date, new Date())
       if(isToday && !this.selectedDate) isSelected = true;
 
       // add events to month/days -> month/day
@@ -213,20 +213,31 @@ export class CalendarComponent implements OnInit {
       case "day":
         this.dayView.nativeElement.classList.add("active");
         newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
-
         break;
       case "today":
         this.todayView.nativeElement.classList.add("active");
         newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+        newSelectedDate = structuredClone(this.currentDay);
 
-        newSelectedDate = this.currentDay;
-
+        this.selectedDate = newSelectedDate;
+        this.setMonth();
         break;
       default: this.monthView.nativeElement.classList.add("active"); break;
     }
     this.calendarSingleDayWrapper.setTopStyle(newTopForDayView);
     // this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
     this.selectedDate = newSelectedDate;
+
+/*    comment this in if you want the following behavior:
+        -> do not jump to the current month when clicking switching mode to "today"
+        -> comment out the last two lines before break in case "today"
+
+    this.calendarData?.calendarDays.forEach(day => {
+      if(this.hasDateSameDay(day.date, this.selectedDate?.date)){
+        day.isSelected = true;
+      }else day.isSelected = false;
+    })
+*/
 
     // we are not regenerating the calendar here, to stay in the selected month when switching modes.
     // if we always want to switch to the month of the selected date, simply comment in the line below
@@ -281,7 +292,7 @@ export class CalendarComponent implements OnInit {
     }else {
       this.calendarEvents!.push(updatedEvent);
     }
-    this.generateCalendar();
+    this.setMonth();
   }
 
   getAllEventsForUser(){
@@ -295,6 +306,8 @@ export class CalendarComponent implements OnInit {
   }
 
   setSelectedDay(dayToAdd: number){
+    // FIXME: This leads to some error and I don't know why
+    //  currentDate seems to receive the same addition in time as selectedDate
     this.selectedDate?.date.setDate(this.selectedDate.date.getDate() + dayToAdd)
     this.setMonth();
 

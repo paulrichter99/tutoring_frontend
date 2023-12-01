@@ -56,7 +56,7 @@
         [class.day-hoverable]="!day.isSelected && !day.isToday"
         (click)="selectDay(day)"
       >
-        <div [class.has-event]="day.hasEvent"> {{ day.date.getDate() }} </div>
+        <div [class.has-event]="day.hasEvent"> {{ day.date.getDate() }}</div>
       </div>
       <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
         <div>{{ cell }}</div>

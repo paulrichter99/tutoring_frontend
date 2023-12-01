@@ -225,7 +225,7 @@ button {
 }
 
 .selected{
-  background-color: rgba($base-color-bg-secondary, 0.9);
+  background-color: rgba($base-color-bg-secondary, 0.9) !important;
   color: $base-color !important;
   font-weight: 600;
   .has-event {
