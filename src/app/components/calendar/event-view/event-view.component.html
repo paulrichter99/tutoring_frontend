@@ -1,0 +1,60 @@
+<div class="calendar-event-view-wrapper" #calendarEventViewWrapper *ngIf="dataLoaded | async">
+  <div class="calendar-event-actions-wrapper">
+    <div>
+      <input  type="date"
+              [value]="startDate"
+              onfocus="this.showPicker()"
+              (change)="this.changeDateRange()"
+              id="start-date-input">
+    </div>
+    -
+    <div>
+      <input  type="date"
+              [value]="endDate"
+              onfocus="this.showPicker()"
+              (change)="this.changeDateRange()"
+              id="end-date-input">
+    </div>
+  </div>
+  <div class="calendar-event-wrapper">
+    <div  class="calendar-event-card"
+          *ngFor="let calendarEvent of this.eventList; let i = index;"
+          (click)="selectEvent(calendarEvent.eventDate)">
+      <!-- TODO: Only display events for the current month (or selected time-span)
+        , differ between past and future events (visually)
+        A good example can be found at https://images.theeventscalendar.com/uploads/2021/06/best-way-display-events-website.jpg
+      -->
+      <div  class="event-slot"
+            [class.hoverable]="this.currentUser"
+      >
+        <!-- (click)="selectEvent(hourPerDay)" -->
+          <app-event-details
+            *ngIf="calendarEvent.eventDate.showEvent == true"
+            [currentEvent]="calendarEvent"
+            [currentEventDate]="calendarEvent.eventDate"
+            [currentCalendarDay]="selectedDate"
+            (changeEventDetails)="changeEventDetails($event, i)"
+          ></app-event-details>
+        <div class="card-details-wrapper">
+          <div class="card-details-date">
+            <div class="card-details-month">
+              {{months[calendarEvent.eventDate.dateTime.getMonth()]}}
+            </div>
+            <div class="card-details-day">
+              {{calendarEvent.eventDate.dateTime.getDate()}}
+            </div>
+          </div>
+          <div class="card-details-right-side">
+            <div class="card-details-event-time">
+              {{calendarService.calculateTime(calendarEvent.eventDate.dateTime, 0)}} Uhr -
+              {{calendarService.calculateTime(calendarEvent.eventDate.dateTime, calendarEvent.eventDuration)}} Uhr
+            </div>
+            <div class="card-details-event-name">
+              <b>{{calendarEvent.eventName}}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

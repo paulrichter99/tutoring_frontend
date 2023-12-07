@@ -33,7 +33,7 @@ export interface CalendarEvent {
   eventName: string;
   eventDescription: string;
   eventDuration: number;
-  eventDates: CalendarDate[];
+  eventDate: CalendarDate;
   // these two should be mandatory
   eventUsers?: User[];
   eventPlace?: string;

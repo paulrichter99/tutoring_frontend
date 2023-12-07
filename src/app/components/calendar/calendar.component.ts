@@ -1,10 +1,13 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { elementAt } from 'rxjs';
 import { CalendarMonth, CalendarDate, CalendarData, CalendarEvent, CalendarDay } from 'src/app/interface/calendar';
 import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
-import { UserService } from 'src/app/services/user.service';
-import { MIN_DAILY_HOUR } from 'src/app/variables/variables';
+import { CalendarService } from 'src/app/services/calendar/calendar.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE, MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
+import { DayViewComponent } from './day-view/day-view.component';
+import { EventViewComponent } from './event-view/event-view.component';
 
 @Component({
   selector: 'app-calendar',
@@ -14,18 +17,25 @@ import { MIN_DAILY_HOUR } from 'src/app/variables/variables';
 
 export class CalendarComponent implements OnInit {
   @ViewChild('monthView', { static: true }) monthView!: ElementRef;
-  @ViewChild('weekView', { static: true }) weekView!: ElementRef;
+  // @ViewChild('weekView', { static: true }) weekView!: ElementRef;
   @ViewChild('dayView', { static: true }) dayView!: ElementRef;
-  @ViewChild('calendarSingleDayWrapper', { static: true }) calendarSingleDayWrapper!: ElementRef;
+  @ViewChild('todayView', { static: true }) todayView!: ElementRef;
+  @ViewChild('eventView', { static: true }) eventView!: ElementRef;
+  @ViewChild('calendarSingleDayWrapper') calendarSingleDayWrapper!: DayViewComponent;
+  @ViewChild('calendarEventViewWrapper') calendarEventViewWrapper!: EventViewComponent;
 
   @ViewChild('calendar', { static: true }) calendar!: ElementRef;
 
-  weekDays: string[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  @Input() dropDownStyle: string = "none";
+
+  weekDays: string[] = WEEK_DAYS;
   currentMonth!: CalendarMonth;
   calendarData: CalendarData | null = null;
   emptyCellsBefore: number[] = [];
   emptyCellsAfter: number[] = [];
+
   selectedDate: CalendarDay | null = null;
+  currentDay: CalendarDay | null = null;
 
   calendarEvents: CalendarEvent[] | null = null;
   anonymousCalendarEvents: CalendarEvent[] | null = null;
@@ -37,12 +47,15 @@ export class CalendarComponent implements OnInit {
   currentCalendarViewMode: string = "month";
   currentUser: User | null = null;
 
+  currentSelectedMonth: string = "";
+
   constructor(private calenderEventService: CalendarEventService,
-              private userService: UserService)
+              private storageService: StorageService,
+              public calendarService: CalendarService)
   { }
 
   ngOnInit() {
-    this.getAllEventsTest();
+    this.getAllEventsForUser();
     this.innerWidth = window.innerWidth;
     // Initialize the calendar when the component is created.
     this.currentMonth = this.getCurrentMonth();
@@ -58,11 +71,7 @@ export class CalendarComponent implements OnInit {
 
   // Function to get the name of the month based on its number (0-based).
   getMonthName(month: number): string {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months[month];
+    return MONTHS[month];
   }
 
   // Function to get the current month and year.
@@ -78,10 +87,10 @@ export class CalendarComponent implements OnInit {
 
     if(this.calendarData){
       this.calendarData.calendarDays = [];
-      this.calendarData.selectedDate = null;
     }
     this.emptyCellsBefore = [];
     this.emptyCellsAfter = [];
+    this.changeCurrentSelectedMonth();
 
     // Calculate the number of empty cells needed to align the first day of the month.
     // 0 for Sunday, 1 for Monday, ...
@@ -101,18 +110,28 @@ export class CalendarComponent implements OnInit {
     // Generate dates for the current month.
     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
       const date = new Date(this.currentMonth.year, this.currentMonth.month, i);
+
       var isSelected = this.selectedDate && date.toDateString() === this.selectedDate.date.toDateString();
-      const isToday = date.toDateString() === new Date().toDateString();
+      const isToday = this.hasDateSameDay(date, new Date())
       if(isToday && !this.selectedDate) isSelected = true;
 
       // add events to month/days -> month/day
       var hoursPerDay: CalendarDate[] = this.generateHoursPerDate(date);
+      const dayToAdd: CalendarDay = { date, isSelected, isToday, "hasEvent" : false,  hoursPerDay};
 
       // push the day to the calendarDays array
-      this.calendarData?.calendarDays.push({ date, isSelected, isToday, "hasEvent" : false,  hoursPerDay});
+      this.calendarData?.calendarDays.push(dayToAdd);
+
+      //set the selected day
+      if(isSelected){
+        this.selectedDate = dayToAdd;
+      }
+      if(isToday){
+        this.currentDay = dayToAdd;
+      }
     }
     // add the event to the corresponding dateTime, if matching
-    this.sortEventsIntoCalendar();
+    this.calendarService.sortEventsIntoCalendar(this.calendarEvents, this.calendarData, this.currentMonth);
 
     let a = 41;
     for(let i = 42; i > (this.calendarData!.calendarDays.length+this.emptyCellsBefore.length); i--){
@@ -121,50 +140,6 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  sortEventsIntoCalendar(){
-    if(!this.calendarEvents) return;
-
-    // loop through each calendarEvent
-    this.calendarEvents.forEach(calendarEvent => {
-      // since one calendarEvent can have multiple dates, we check if the item
-      //  matches with our current year and month
-      calendarEvent.eventDates.find(item => {
-        // if it matches, we have to assign it to the right day and time slot
-        if(
-          item.dateTime.getFullYear() == this.currentMonth.year &&
-          item.dateTime.getMonth() == this.currentMonth.month
-        ){
-          this.addEventToCalendarDay(calendarEvent, item);
-        }
-      })
-    })
-  }
-
-  addEventToCalendarDay(calendarEvent: CalendarEvent, calendarDate: CalendarDate){
-    // check if we have the correct day matching our found event date day
-    if(this.calendarData!.calendarDays[calendarDate.dateTime.getDate()-1]){
-      const correctDay = this.calendarData!.calendarDays[calendarDate.dateTime.getDate()-1]
-
-      // since we are sure this is the matching day, we now search for the correct time
-      var startIndex = (calendarDate.dateTime.getHours() - MIN_DAILY_HOUR)
-      if(calendarDate.dateTime.getMinutes() == 30){
-        startIndex += 0.5
-      }
-      startIndex *= 2;
-
-      // now we have to respect the duration as well
-      const endIndex = startIndex + (Math.ceil(calendarEvent.eventDuration / 30)) - 1;
-
-      // check the current time slot. We have to keep in mind, that the endIndex points to the end-time
-      //  since a hourPerDay is representing a timeSlot (12:00 - 12:30), we have to do endIndex -= 1
-      if(correctDay.hoursPerDay[startIndex].dateTime.toISOString() == calendarDate.dateTime.toISOString()){
-        for(let i = startIndex; i <= endIndex; i++){
-          correctDay.hoursPerDay[i].event = calendarEvent;
-          correctDay.hasEvent = true;
-        }
-      }
-    }
-  }
   // Function to generate the hours for every day from 8:00, 8:30 ... 19:00, 19:30
   generateHoursPerDate(date: Date){
     var arr: CalendarDate[] = [];
@@ -197,6 +172,35 @@ export class CalendarComponent implements OnInit {
     this.generateCalendar();
   }
 
+  setMonth(){
+    if(!(this.currentMonth.month == this.selectedDate?.date.getMonth())){
+      this.currentMonth.month = this.selectedDate!.date.getMonth();
+      this.currentMonth.year = this.selectedDate!.date.getFullYear();
+    }
+    this.generateCalendar();
+  }
+  setCurrentSelectedMonth(e:Event) {
+    const element = <HTMLInputElement>e.target
+
+    if(element.value != "" && element.value){
+      this.currentSelectedMonth = element.value
+    }else{
+      return;
+    }
+
+    const newDate = new Date(this.currentSelectedMonth);
+    this.currentMonth.month = newDate.getMonth();
+    this.currentMonth.year = newDate.getFullYear();
+    this.generateCalendar();
+  }
+
+  changeCurrentSelectedMonth(){
+    this.currentSelectedMonth =
+      this.currentMonth.year +
+      "-" +
+      ("0" + (this.currentMonth.month + 1)).toString().slice(-2);
+  }
+
   // Function to handle date selection.
   selectDay(selectedDate: CalendarDay) {
     if(!selectedDate) return
@@ -206,136 +210,181 @@ export class CalendarComponent implements OnInit {
       if(day == this.selectedDate) day.isSelected = true;
       else day.isSelected = false
     })
-    this.changeCalendarDisplayMode("day", this.selectedDate);
+    this.setCalendarToDayView(this.selectedDate);
   }
 
-  changeCalendarDisplayMode(mode: string, selectedDate?: CalendarDay | null){
-    if(this.currentCalendarViewMode == mode)
+  setCalendarToMonthView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "month"){
       return;
-    this.currentCalendarViewMode = mode;
+    }
+    this.currentCalendarViewMode = "month";
+
+    this.changeCalendarDisplayMode("100vh", "100vh")
+
+    this.monthView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToDayView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "day"){
+      return;
+    }
+    this.currentCalendarViewMode = "day";
+
+    var newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    this.changeCalendarDisplayMode(newTopForDayView, "100vh");
+
+    this.dayView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToTodayView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "today"){
+      return;
+    }
+    this.currentCalendarViewMode = "today";
+
+    var newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    var newSelectedDate = structuredClone(this.currentDay);
+    this.selectedDate = newSelectedDate;
+
+    this.changeCalendarDisplayMode(newTopForDayView, "100vh");
+    this.setMonth();
+
+    this.todayView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToEventView(){
+    if(this.currentCalendarViewMode == "event" || !this.currentUser){
+      return;
+    }
+    this.currentCalendarViewMode = "event";
+
+    var newTopForEventView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    this.changeCalendarDisplayMode("100vh", newTopForEventView);
+
+    this.eventView.nativeElement.classList.add("active");
+  }
+
+  // TODO: Complexity is very high and there are a lot of lines, maybe we can improve here
+  changeCalendarDisplayMode(newTopForDayView: string, newTopForEventView: string){
+
     this.monthView.nativeElement.classList.remove("active");
-    this.weekView.nativeElement.classList.remove("active");
+    // this.weekView.nativeElement.classList.remove("active");
     this.dayView.nativeElement.classList.remove("active");
-    var newSelectDate: CalendarDay | null = selectedDate ? selectedDate : null;
-    var newTopForDayView = "100vh";
+    this.todayView.nativeElement.classList.remove("active");
+    this.eventView.nativeElement.classList.remove("active");
 
-    // TODO: maybe instead of scrolling from bottom to top, imitate a component switch
-    // -> create a calendarMonthView, calendarWeekView and calendarDayView
-    // -> when switching components, you can just use the default animation or just set left: -100 or left: 0
+    this.calendarSingleDayWrapper.setTopStyle(newTopForDayView);
+    this.calendarEventViewWrapper.setTopStyle(newTopForEventView);
+    // this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
 
-    switch(mode){
-      case "month":
-        this.monthView.nativeElement.classList.add("active");
-        break;
-      case "week": this.weekView.nativeElement.classList.add("active"); break;
-      case "day":
-        this.dayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? "180px" : "115px";
-        if(this.selectedDate == null){
-          var res = this.calendarData?.calendarDays.filter((date) => date.isToday == true);
-          if(res) newSelectDate = res[0];
-        }
-        break;
-      default: this.monthView.nativeElement.classList.add("active"); break;
-    }
+    /*  comment this in if you want the following behavior:
+            -> do not jump to the current month when clicking switching mode to "today"
+            -> comment out the last two lines before break in case "today"
 
-    this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
-    this.selectedDate = newSelectDate;
+        this.calendarData?.calendarDays.forEach(day => {
+          if(this.hasDateSameDay(day.date, this.selectedDate?.date)){
+            day.isSelected = true;
+          }else day.isSelected = false;
+        })
+    */
 
+    // we are not regenerating the calendar here, to stay in the selected month when switching modes.
+    // if we always want to switch to the month of the selected date, simply comment in the line below
+    // if we want to have buttons to jump to the current month, just call this.setMonth() from any function
+    // this.setMonth();
+
+    // Note: if we want a jump to current month and a separate one for the selectedDate, but keep the current date
+    // when jumping to current month, we have to differ methods (not setting this.selectedDate but
+    //  rather use this.currentDate)
   }
 
-  getEventsFromBackend(){
-    this.userService.getUserData().subscribe({
-      next: (data) => {
-        this.currentUser = <User>data;
-        this.calendarEvents = (<User>data)?.calendarEvents;
-        if(!this.anonymousCalendarEvents){
-          console.error("Something went wrong: CalendarComponent -> getEventsFromBackend()")
-        }
-        for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
-          if(!(this.calendarEvents.find((element) => element.id == anonymousCalendarEvent.id))){
-            this.calendarEvents.push(anonymousCalendarEvent);
-            this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
-          }
-        }
-        this.convertDateData();
-        this.generateCalendar();
-      },
-      error: (error) => {
-        this.calendarEvents = [];
-        this.generateCalendar();
-      }
-    })
-  }
+  getEventsFromUser(){
+    this.currentUser = this.storageService.getLocalUserData();
 
-  checkIfPartOfPreviousEvent(index: number): boolean{
-    var check: boolean = false;
-    if(index > 0){
-      if( this.selectedDate!.hoursPerDay[index-1].event &&
-          this.selectedDate!.hoursPerDay[index].event &&
-          (this.selectedDate!.hoursPerDay[index].event?.id == this.selectedDate!.hoursPerDay[index-1].event?.id)
-      ){
-        check = true;
+    if(!this.anonymousCalendarEvents){
+      console.error("Something went wrong: CalendarComponent -> getEventsFromUser()")
+    }
+
+    if(!this.currentUser) {
+      this.calendarEvents = [];
+      for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
+          this.calendarEvents.push(anonymousCalendarEvent);
+          this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
+      }
+    }else{
+      this.calendarEvents = this.currentUser.calendarEvents;
+      for(let anonymousCalendarEvent of this.anonymousCalendarEvents!){
+        if(!(this.calendarEvents.find((element) => element.id == anonymousCalendarEvent.id))){
+          this.calendarEvents.push(anonymousCalendarEvent);
+          this.calendarEvents[this.calendarEvents.length-1].isAnonymousEvent = true;
+        }
       }
     }
-    return check;
+    this.convertDateData();
+    this.generateCalendar();
   }
 
   // this is more of a util function
   convertDateData(){
     this.calendarEvents?.forEach(calendarEvent => {
-      calendarEvent.eventDates?.forEach(calendarDate => {
-        let angularDate:Date = new Date(calendarDate.dateTime)
-        calendarDate.dateTime = angularDate;
-      })
+        let angularDate:Date = new Date(calendarEvent.eventDate.dateTime)
+        calendarEvent.eventDate.dateTime = angularDate;
     })
   }
 
-  // this is more of a util function
-  calculateTime(date: Date, duration: number){
-    var endTime = "";
-    const fullHour = Math.floor((date.getHours() * 60 + date.getMinutes() + duration) / 30 / 2);
-    var minutes = ((date.getMinutes() + duration) % 60).toString()
-
-    if(minutes == "0") minutes = "00"
-
-    endTime = fullHour.toString() + ":" + minutes.toString()
-    return endTime
-  }
-
-  selectEvent(selectedEventDateTime: CalendarDate | null){
-    // we check if the selectEvent actually is meant to be a new event
-    if(selectedEventDateTime?.event == null){
-      // all times after 18:00 are only for the purpose of showing events, not for creating one at this time
-      // therefore, we will set the max time to 18:00
-      if(
-        (selectedEventDateTime?.dateTime.getHours()! == 18 && selectedEventDateTime?.dateTime.getMinutes()! != 0)
-        || selectedEventDateTime?.dateTime.getHours()! > 18){
-        selectedEventDateTime?.dateTime.setHours(18);
-        selectedEventDateTime?.dateTime.setMinutes(0);
-      }
-      selectedEventDateTime!.event =
-        { "eventName": "",
-          "eventDates": [ {"dateTime": selectedEventDateTime!.dateTime} ],
-          "eventDescription": "",
-          "eventDuration": 60,
-          "eventPlace":"home",
-          "eventUsers": [this.currentUser!]
-        }
-
+  changeEventDetails(updatedEvent: CalendarEvent){
+    var eventToUpdate = this.calendarEvents!.findIndex((element) => element.id == updatedEvent.id);
+    if(eventToUpdate > -1) {
+      this.calendarEvents![eventToUpdate] = updatedEvent
+    }else {
+      this.calendarEvents!.push(updatedEvent);
     }
-
-    if(selectedEventDateTime && !selectedEventDateTime.showEvent)
-      selectedEventDateTime.showEvent = true;
+    this.calendarEventViewWrapper.changeEvent(updatedEvent);
+    this.setMonth();
   }
 
-  async getAllEventsTest(){
+  getAllEventsForUser(){
     this.calenderEventService.getAllEventsForAnyUser().subscribe({
       next: data => {
         this.anonymousCalendarEvents = <CalendarEvent[]>data
-        this.getEventsFromBackend();
+        this.getEventsFromUser();
       },
       error: e => console.error(e)
     })
+  }
+
+  setSelectedDay(dayToAdd: number){
+    // FIXME: This leads to some error and I don't know why
+    //  currentDate seems to receive the same addition in time as selectedDate
+    this.selectedDate?.date.setDate(this.selectedDate.date.getDate() + dayToAdd)
+    this.setMonth();
+
+    if(this.hasDateSameDay(this.selectedDate?.date, new Date())){
+      this.setCalendarToTodayView();
+    }else{
+      this.setCalendarToDayView();
+    }
+
+    this.calendarData?.calendarDays.forEach(day => {
+      //set the selected day
+      if(this.hasDateSameDay(this.selectedDate?.date, day.date)){
+        this.selectedDate = day;
+      }
+    })
+  }
+
+  hasDateSameDay(firstDate: Date | undefined, secondDate: Date | undefined): boolean{
+    if(!firstDate || !secondDate) return false;
+    else if(
+      (firstDate.getDate() == secondDate.getDate())
+      && (firstDate.getMonth() == secondDate.getMonth())
+      && (firstDate.getFullYear() == secondDate.getFullYear())
+    ){
+      return true;
+    }
+    return false;
   }
 }

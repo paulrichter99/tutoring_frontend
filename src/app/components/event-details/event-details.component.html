@@ -6,7 +6,8 @@
   <div class="event-details event-form" *ngIf="this.currentEvent && this.currentEventDate" id='event-details'>
     <div class="event-header">
       <button (click)="closeEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-xmark"></i> </button>
-      <div> Termin bearbeiten </div>
+      <div *ngIf="this.currentEvent.id && this.currentEvent.id > 0"> Termin bearbeiten </div>
+      <div *ngIf="!this.currentEvent.id || this.currentEvent.id <= 0"> Termin erstellen </div>
       <button (click)="saveEventDetails();$event.stopPropagation()"> <i class="fa-solid fa-check"></i> </button>
     </div>
     <div class="event-name">
@@ -22,7 +23,7 @@
             class="event-date-day-input"
             id="event-date-day-input"
             name="eventDateDay"
-            value="{{this.currentEventDate.dateTime.toISOString().substr(0, 10)}}">
+            value="{{this.currentEvent.eventDate.dateTime.toISOString().substr(0, 10)}}">
           <select
             class="event-date-time-select" id="event-date-time-select">
             <option *ngFor="let possibleHour of possibleHours; let i = index" value="{{possibleHour}}">
@@ -39,7 +40,7 @@
         </div>
       </div>
     </div>
-    <!--
+    <!-- Not yet used
     <div class="event-repeat">
       <label> <i class="fi fi-rs-arrows-repeat"></i> </label>
       <select class="repeating-event-select" id="event-repeating-select">
@@ -57,6 +58,19 @@
         <option value="online"> Online </option>
         <option value="home"> Zuhause </option>
       </select>
+    </div>
+
+    <div *ngIf="!this.currentEvent.id" class="event-private"
+      title="Private Termine zeigen Tutoren, dass du in diesem Slot nicht verfügbar bist (Bereits blockiert).
+      Wenn diese Option nicht ausgewählt ist, erstellst du automatisch einen Nachhilfetermin!">
+      <label> <i class="fi fi-rr-lock"></i> </label>
+      <input type="checkbox" id="event-private-input">
+    </div>
+
+    <div class="event-error">
+      <div class="error-message">
+        {{errorMessage}}
+      </div>
     </div>
   </div>
 </div>

@@ -1,21 +1,44 @@
 <div class="calendar-wrapper">
   <div class="calendar-actions">
-    <ul>
-      <li (click)="changeCalendarDisplayMode('month')"> <i #monthView class="fa-regular fa-calendar-days active"></i> </li>
-      <li (click)="changeCalendarDisplayMode('week')"> <i #weekView class="fa-solid fa-calendar-week"></i> </li>
-      <li (click)="changeCalendarDisplayMode('day')"> <i #dayView class="fa-regular fa-calendar"></i> </li>
-    </ul>
-    <button> <i class="fa-regular fa-calendar-check"></i> </button>
+    <div class="calendar-header-wrapper">
+      <ul>
+        <!-- (click)="changeCalendarDisplayMode('week')" -->
+        <li #monthView (click)="this.setCalendarToMonthView()" class="active">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span class="calendar-view-text"> Monat </span>
+        </li>
+        <li #weekView class="hidden">
+          <i #weekView class="fa-solid fa-calendar-week disabled"></i>
+          <span class="calendar-view-text"> Woche </span>
+        </li>
+        <li #dayView (click)="this.setCalendarToDayView()">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span class="calendar-view-text"> Tag </span>
+        </li>
+        <li #todayView (click)="this.setCalendarToTodayView()">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <span class="calendar-view-text"> Heute </span>
+        </li>
+        <li #eventView (click)="this.setCalendarToEventView()" [class.disabled]="!this.currentUser">
+          <i class="fa-regular fa-calendar"></i>
+          <span class="calendar-view-text"> Events </span>
+        </li>
+      </ul>
+    </div>
+
   </div>
   <div class="calendar" #calendar>
-    <div class="calendar-header">
+    <div class="calendar-month-actions">
       <button (click)="previousMonth()">
-        <i class="fa-solid fa-chevron-left"></i>
+        <i class="fa-solid fa-chevron-up icon-previous-month"></i>
       </button>
-      <h2>{{ currentMonth.year }} - {{ getMonthName(currentMonth.month) }}</h2>
       <button (click)="nextMonth()">
-        <i class="fa-solid fa-chevron-right"></i>
+        <i class="fa-solid fa-chevron-down icon-next-month"></i>
       </button>
+      <!-- TODO: Make this a dropdown selection -->
+      <input  type="month" id="calendar-current-selected-month"
+              [value]="currentSelectedMonth" (change)="this.setCurrentSelectedMonth($event)">
+      <!-- <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div> -->
     </div>
     <div class="calendar-weekdays">
       <div *ngFor="let day of weekDays" class="weekday"> <div> {{day}} </div> </div>
@@ -23,7 +46,7 @@
     <div class="calendar-days">
       <!-- start with empty cells  to match the starting day of the month with weekday -->
       <div *ngFor="let cell of emptyCellsBefore" class="calendar-day outside-month">
-        {{ cell }}
+        <div>{{ cell }}</div>
       </div>
 
       <div
@@ -31,71 +54,28 @@
         class="calendar-day"
         [class.selected]="day.isSelected"
         [class.today]="day.isToday"
-        [class.has-event]="day.hasEvent"
+        [class.day-hoverable]="!day.isSelected && !day.isToday"
         (click)="selectDay(day)"
       >
-        <div > {{ day.date.getDate() }} </div>
+        <div [class.has-event]="day.hasEvent"> {{ day.date.getDate() }}</div>
       </div>
       <div *ngFor="let cell of emptyCellsAfter" class="calendar-day outside-month">
-        {{cell}}
+        <div>{{ cell }}</div>
       </div>
     </div>
   </div>
 </div>
-<div class="calendar-single-day-wrapper" #calendarSingleDayWrapper>
-  <!-- TODO: Choose next day from here / navigation -->
-  <div> </div>
-  <div class="calendar-single-day" *ngIf="selectedDate">
-    <div class="calendar-selected-date-header">
-      {{selectedDate.date.getDate()}}.{{selectedDate.date.getMonth()+1}}.{{selectedDate.date.getFullYear()}}
-    </div>
-    <div class="time-slots">
-      <div class="time-table-column times-column">
-        <div *ngFor="let hourPerDay of selectedDate.hoursPerDay" class="time-table-row times-row">
-          <div class="time-slot"> <div *ngIf="hourPerDay.dateTime.getMinutes() == 0"> {{ hourPerDay.dateTime.getHours() }} </div> </div>
-        </div>
-      </div>
-      <div class="time-table-column events-column">
-        <!--
-          TODO: Mobile view: take the whole screen instead of bordered view
-          -> It additionally seems that you can scroll the bare minimum in day view for some reason
-            ->  figure out how the scrolling is affected and fix this, so that scrolling is consistent across
-                user devices
-        -->
-        <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
-              class="time-table-row events-row"
-              [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
-              [class.partOf-previous-event]="checkIfPartOfPreviousEvent(i)"
-              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
-        >
-          <div  class="event-slot"
-                [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
-                [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
-                (click)="selectEvent(hourPerDay)">
-            <app-event-details
-              *ngIf="checkIfPartOfPreviousEvent(i) == false
-              && hourPerDay.showEvent == true
-              && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
-              [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
-              [currentEventDate]="hourPerDay"
-              [currentCalendarDay]="selectedDate"
-            ></app-event-details>
-            <div *ngIf="hourPerDay.event
-                  && hourPerDay.event.id
-                  && !(hourPerDay.event.isAnonymousEvent)"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
-            >
-              {{hourPerDay.event.eventName}}
-              <div>
-                &nbsp; | &nbsp; {{calculateTime(hourPerDay.dateTime, 0)}} Uhr -
-                {{calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
-              </div>
-            </div>
-            <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"> Bereits blockiert</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-day-view
+  #calendarSingleDayWrapper
+  [selectedDate]="this.selectedDate"
+  [currentUser]="this.currentUser"
+  (setSelectedDayEmitter)="setSelectedDay($event)"
+  (changeEventDetailsEmitter)="changeEventDetails($event)"
+></app-day-view>
+<app-event-view
+  *ngIf="this.currentUser && this.selectedDate"
+  #calendarEventViewWrapper
+  [selectedDate]="this.selectedDate"
+  [currentUser]="this.currentUser"
+  (changeEventDetailsEmitter)="changeEventDetails($event)">
+</app-event-view>

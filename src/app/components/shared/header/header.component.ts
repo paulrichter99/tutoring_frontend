@@ -1,35 +1,26 @@
-import { Component, ElementRef, HostBinding, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/interface/user';
+import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
+import { ACCESS_TOKEN, HEADER_HEIGHT_MOBILE, USER_DATA } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent{
   @ViewChild('fixedNavBackground', { static: true }) fixedNavBackground!: ElementRef;
   @ViewChild('fixedNavDropdown', { static: true }) fixedNavDropdown!: ElementRef;
   @ViewChild('dropdownContent', { static: true }) dropdownContent!: ElementRef;
-  @ViewChild('dropdown', { static: true }) dropdown!: ElementRef;
+
+  @Input() user: User | null = null;
 
   dropdownIsOpen: boolean = false;
 
-  constructor(private userService: UserService){}
-
-  user: User | null = null;
-
-  ngOnInit(): void {
-    if(localStorage.getItem("jwt_token")){
-      this.userService.getUserData().subscribe({
-        next: (userData) => {
-          this.user = userData;
-          this.dropdown.nativeElement.style.display="block";
-        },
-        error: (e) => console.error(e)
-      })
-    }
-  }
+  constructor(
+    private userService: UserService,
+    private storageService: StorageService){}
   performDropdownClick(){
     if(window.innerWidth < 750){
       this.performMobileDropdownClick();
@@ -46,7 +37,7 @@ export class HeaderComponent implements OnInit{
   }
   performMobileDropdownClick() {
     if(!this.dropdownIsOpen){
-      this.fixedNavDropdown.nativeElement.style.top = "160px";
+      this.fixedNavDropdown.nativeElement.style.top = (HEADER_HEIGHT_MOBILE+30) + "px";
       this.fixedNavBackground.nativeElement.style.display = "block";
 
     }else{
@@ -80,7 +71,8 @@ export class HeaderComponent implements OnInit{
 
   logout(){
     this.user = null;
-    localStorage.removeItem("jwt_token");
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem(USER_DATA)
     window.location.reload();
   }
 }

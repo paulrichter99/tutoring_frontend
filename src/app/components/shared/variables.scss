@@ -1,7 +1,15 @@
-$base-color: #f5f6fa; /* base font color */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+$base-color: #f5f6fa;
+$base-color-bg: #2f3640;
+$base-color-bg-secondary: #474f61;
+$base-color-bg-light: #717fa0;
+
+$color-active-tab: #d6664a;
+$color-active-tab-dark:rgb(173, 64, 36);
+
+$error-color: #dc3545;
 $dropdown-background: rgb(27, 33, 43);
-$base-color-bg: #2f3640; /* base bg color */
-$base-color-bg-secondary: #474f61; /* base secondary bg color */
-$base-color-bg-light: #717fa0; /* light bg color */
-$color-active-tab: #d6664a; /* Active tab text color */
-$color-active-tab-dark:rgb(173, 64, 36); /* Active tab text color (dark version) */
+
+$header-height: 100px;
+$header-height-mobile: 50px;

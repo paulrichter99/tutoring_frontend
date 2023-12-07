@@ -1,18 +1,19 @@
+@import "/src/app/components/shared/variables.scss";
+
 :host {
   display: block;
   position: fixed;
-  top: 120px;
+  top: $header-height;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: calc(100vh - $header-height);
 
   text-align: center;
 }
 
-@import "/src/app/components/shared/variables.scss";
 
 @media (max-width: 750px){
   :host {
-    height: calc(100vh - 60px);
-    top: 60px;
+    height: calc(100vh - $header-height-mobile);
+    top: $header-height-mobile;
   }
 }

@@ -1,9 +1,11 @@
+@import "/src/app/components/shared/variables.scss";
+
 :host {
   display: block;
   position: fixed;
-  top: 120px;
+  top: $header-height;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: calc(100vh - $header-height);
 
   text-align: center;
 }
