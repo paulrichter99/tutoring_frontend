@@ -17,12 +17,12 @@
               class="time-table-row events-row"
               [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
               [class.partOf-previous-event]="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate)"
-              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? hourPerDay.event.eventDuration-1 : null"
+              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? calculateEventWrapperHeight(hourPerDay) : null"
         >
           <div  class="event-slot"
                 [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
                 [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
-                [class.hoverable]="this.currentUser"
+                [class.hoverable]="this.currentUser && !(hourPerDay.event?.isAnonymousEvent)"
                 (click)="selectEvent(hourPerDay)"
           >
             <app-event-details
@@ -41,8 +41,8 @@
             >
               {{hourPerDay.event.eventName}}
               <div>
-                &nbsp; | &nbsp; {{calendarService.calculateTime(hourPerDay.dateTime, 0)}} Uhr -
-                {{calendarService.calculateTime(hourPerDay.dateTime, hourPerDay.event.eventDuration)}} Uhr
+                &nbsp; | &nbsp; {{calendarService.calculateTime(hourPerDay.event.eventDate.dateTime, 0)}} Uhr -
+                {{calendarService.calculateTime(hourPerDay.event.eventDate.dateTime, hourPerDay.event.eventDuration)}} Uhr
               </div>
             </div>
             <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"

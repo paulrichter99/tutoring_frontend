@@ -22,6 +22,11 @@ export const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+export const MONTHS_SHORT = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
+
 export const WEEK_DAYS =  ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
 export const BASE_URL = "http://192.168.178.28:8085/api";

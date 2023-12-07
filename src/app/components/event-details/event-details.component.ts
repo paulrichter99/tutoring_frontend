@@ -56,7 +56,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     // set initial time in eventDateTimeSelectElement
     const eventDateTimeSelectElement = <HTMLSelectElement>document.getElementById("event-date-time-select");
     eventDateTimeSelectElement.value =
-      this.currentEventDate!.dateTime.getHours() + ":" + String(this.currentEventDate!.dateTime.getMinutes()).padStart(2, '0');
+      this.currentEvent!.eventDate.dateTime.getHours() + ":" + String(this.currentEvent!.eventDate.dateTime.getMinutes()).padStart(2, '0');
   }
 
   closeEventDetails(){
@@ -123,12 +123,13 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     var updatedEvent: CalendarEvent = JSON.parse(oldEventCopy);
     //set event values according to rules
     updatedEvent.eventName = eventNameInputElement.value;
-    for(let oldDate of updatedEvent.eventDates){
-      var date: Date = new Date(oldDate.dateTime);
-      if(date.getTime() == this.currentEventDate?.dateTime.getTime()){
-        oldDate.dateTime = newDate;
-      }
+    const oldDate = updatedEvent.eventDate;
+
+    var date: Date = new Date(oldDate.dateTime);
+    if(date.getTime() == this.currentEventDate?.dateTime.getTime()){
+      oldDate.dateTime = newDate;
     }
+
     updatedEvent.eventDuration = Number.parseInt(eventDurationSelectElement.value);
 
     // TODO: Place of tutoring session not yet used, please set in backend
@@ -167,10 +168,9 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
 
   convertDateData(){
     if(!this.currentEvent) return;
-    this.currentEvent.eventDates?.forEach(calendarDate => {
-      let angularDate:Date = new Date(calendarDate.dateTime)
-      calendarDate.dateTime = angularDate;
-    })
+
+    let angularDate:Date = new Date(this.currentEvent.eventDate.dateTime)
+    this.currentEvent.eventDate.dateTime = angularDate;
 
     this.changeEventDetails.next(this.currentEvent);
 

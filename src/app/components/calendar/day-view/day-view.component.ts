@@ -18,6 +18,8 @@ export class DayViewComponent{
 
   constructor(public calendarService: CalendarService){}
 
+  // FIXME: There is a bug, where you cannot save an event properly, if it is overlapping another event
+
   selectEvent(selectedEventDateTime: CalendarDate | null){
 
     if(!this.currentUser){ return; }
@@ -33,7 +35,7 @@ export class DayViewComponent{
       }
       selectedEventDateTime!.event =
         { "eventName": "",
-          "eventDates": [ {"dateTime": selectedEventDateTime!.dateTime} ],
+          "eventDate": {"dateTime": selectedEventDateTime!.dateTime},
           "eventDescription": "",
           "eventDuration": 60,
           "eventPlace":"home",
@@ -55,5 +57,11 @@ export class DayViewComponent{
 
   setTopStyle(newTopForDayView: string){
     this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
+  }
+
+  calculateEventWrapperHeight(hourPerDay: CalendarDate){
+    if(!hourPerDay.event) return 29;
+    var newHeight = hourPerDay.event.eventDuration - ((hourPerDay.dateTime.getTime() - hourPerDay.event.eventDate.dateTime.getTime()) / 60000);
+    return newHeight - 1;
   }
 }

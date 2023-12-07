@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './components/profile/profile.component';
 import { EventDetailsComponent } from './components/event-details/event-details.component';
 import { DayViewComponent } from './components/calendar/day-view/day-view.component';
+import { EventViewComponent } from './components/calendar/event-view/event-view.component';
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import { DayViewComponent } from './components/calendar/day-view/day-view.compon
     ProfileComponent,
     EventDetailsComponent,
     DayViewComponent,
+    EventViewComponent,
   ],
   imports: [
     BrowserModule,

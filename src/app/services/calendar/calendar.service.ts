@@ -54,17 +54,12 @@ export class CalendarService {
 
     // loop through each calendarEvent
     calendarEvents.forEach(calendarEvent => {
-      // since one calendarEvent can have multiple dates, we check if the item
-      //  matches with our current year and month
-      calendarEvent.eventDates.find(item => {
-        // if it matches, we have to assign it to the right day and time slot
-        if(
-          item.dateTime.getFullYear() == currentMonth.year &&
-          item.dateTime.getMonth() == currentMonth.month
-        ){
-          this.addEventToCalendarDay(calendarEvent, item, calendarData!);
-        }
-      })
+      if(
+        calendarEvent.eventDate.dateTime.getFullYear() == currentMonth.year &&
+        calendarEvent.eventDate.dateTime.getMonth() == currentMonth.month
+      ){
+        this.addEventToCalendarDay(calendarEvent, calendarEvent.eventDate, calendarData!);
+      }
     })
   }
 

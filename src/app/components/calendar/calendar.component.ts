@@ -5,9 +5,9 @@ import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
 import { CalendarService } from 'src/app/services/calendar/calendar.service';
 import { StorageService } from 'src/app/services/storage.service';
-import { UserService } from 'src/app/services/user.service';
 import { HEADER_HEIGHT, HEADER_HEIGHT_MOBILE, MIN_DAILY_HOUR, MONTHS, WEEK_DAYS } from 'src/app/variables/variables';
 import { DayViewComponent } from './day-view/day-view.component';
+import { EventViewComponent } from './event-view/event-view.component';
 
 @Component({
   selector: 'app-calendar',
@@ -20,8 +20,9 @@ export class CalendarComponent implements OnInit {
   // @ViewChild('weekView', { static: true }) weekView!: ElementRef;
   @ViewChild('dayView', { static: true }) dayView!: ElementRef;
   @ViewChild('todayView', { static: true }) todayView!: ElementRef;
-  // @ViewChild('eventView', { static: true }) eventView!: ElementRef;
+  @ViewChild('eventView', { static: true }) eventView!: ElementRef;
   @ViewChild('calendarSingleDayWrapper') calendarSingleDayWrapper!: DayViewComponent;
+  @ViewChild('calendarEventViewWrapper') calendarEventViewWrapper!: EventViewComponent;
 
   @ViewChild('calendar', { static: true }) calendar!: ElementRef;
 
@@ -185,59 +186,86 @@ export class CalendarComponent implements OnInit {
       if(day == this.selectedDate) day.isSelected = true;
       else day.isSelected = false
     })
-    this.changeCalendarDisplayMode("day", this.selectedDate);
+    this.setCalendarToDayView(this.selectedDate);
+  }
+
+  setCalendarToMonthView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "month"){
+      return;
+    }
+    this.currentCalendarViewMode = "month";
+
+    this.changeCalendarDisplayMode("100vh", "100vh")
+
+    this.monthView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToDayView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "day"){
+      return;
+    }
+    this.currentCalendarViewMode = "day";
+
+    var newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    this.changeCalendarDisplayMode(newTopForDayView, "100vh");
+
+    this.dayView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToTodayView(selectedDate?: CalendarDay | null){
+    if(this.currentCalendarViewMode == "today"){
+      return;
+    }
+    this.currentCalendarViewMode = "today";
+
+    var newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    var newSelectedDate = structuredClone(this.currentDay);
+    this.selectedDate = newSelectedDate;
+
+    this.changeCalendarDisplayMode(newTopForDayView, "100vh");
+    this.setMonth();
+
+    this.todayView.nativeElement.classList.add("active");
+  }
+
+  setCalendarToEventView(){
+    if(this.currentCalendarViewMode == "event"){
+      return
+    }
+    this.currentCalendarViewMode = "event";
+
+    var newTopForEventView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
+
+    this.changeCalendarDisplayMode("100vh", newTopForEventView);
+
+    this.eventView.nativeElement.classList.add("active");
   }
 
   // TODO: Complexity is very high and there are a lot of lines, maybe we can improve here
-  changeCalendarDisplayMode(mode: string, selectedDate?: CalendarDay | null){
-    if(this.currentCalendarViewMode == mode)
-      return;
+  changeCalendarDisplayMode(newTopForDayView: string, newTopForEventView: string){
 
-    this.currentCalendarViewMode = mode;
     this.monthView.nativeElement.classList.remove("active");
     // this.weekView.nativeElement.classList.remove("active");
     this.dayView.nativeElement.classList.remove("active");
     this.todayView.nativeElement.classList.remove("active");
-    var newSelectedDate: CalendarDay | null = selectedDate ? selectedDate : this.selectedDate;
-    var newTopForDayView = "100vh";
+    this.eventView.nativeElement.classList.remove("active");
 
-    // TODO: maybe instead of scrolling from bottom to top, imitate a component switch
-    // -> create a calendarMonthView, calendarWeekView and calendarDayView
-    // -> when switching components, you can just use the default animation or just set left: -100 or left: 0
-
-    switch(mode){
-      case "month":
-        this.monthView.nativeElement.classList.add("active");
-        break;
-      // case "week": this.weekView.nativeElement.classList.add("active"); break;
-      case "day":
-        this.dayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
-        break;
-      case "today":
-        this.todayView.nativeElement.classList.add("active");
-        newTopForDayView = this.innerWidth > 750? (HEADER_HEIGHT + 60) + "px" : (HEADER_HEIGHT_MOBILE+60) + "px";
-        newSelectedDate = structuredClone(this.currentDay);
-
-        this.selectedDate = newSelectedDate;
-        this.setMonth();
-        break;
-      default: this.monthView.nativeElement.classList.add("active"); break;
-    }
     this.calendarSingleDayWrapper.setTopStyle(newTopForDayView);
+    this.calendarEventViewWrapper.setTopStyle(newTopForEventView);
     // this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
-    this.selectedDate = newSelectedDate;
 
-/*    comment this in if you want the following behavior:
-        -> do not jump to the current month when clicking switching mode to "today"
-        -> comment out the last two lines before break in case "today"
+    /*  comment this in if you want the following behavior:
+            -> do not jump to the current month when clicking switching mode to "today"
+            -> comment out the last two lines before break in case "today"
 
-    this.calendarData?.calendarDays.forEach(day => {
-      if(this.hasDateSameDay(day.date, this.selectedDate?.date)){
-        day.isSelected = true;
-      }else day.isSelected = false;
-    })
-*/
+        this.calendarData?.calendarDays.forEach(day => {
+          if(this.hasDateSameDay(day.date, this.selectedDate?.date)){
+            day.isSelected = true;
+          }else day.isSelected = false;
+        })
+    */
 
     // we are not regenerating the calendar here, to stay in the selected month when switching modes.
     // if we always want to switch to the month of the selected date, simply comment in the line below
@@ -278,10 +306,8 @@ export class CalendarComponent implements OnInit {
   // this is more of a util function
   convertDateData(){
     this.calendarEvents?.forEach(calendarEvent => {
-      calendarEvent.eventDates?.forEach(calendarDate => {
-        let angularDate:Date = new Date(calendarDate.dateTime)
-        calendarDate.dateTime = angularDate;
-      })
+        let angularDate:Date = new Date(calendarEvent.eventDate.dateTime)
+        calendarEvent.eventDate.dateTime = angularDate;
     })
   }
 
@@ -292,6 +318,7 @@ export class CalendarComponent implements OnInit {
     }else {
       this.calendarEvents!.push(updatedEvent);
     }
+    this.calendarEventViewWrapper.changeEvent(updatedEvent);
     this.setMonth();
   }
 
@@ -312,9 +339,9 @@ export class CalendarComponent implements OnInit {
     this.setMonth();
 
     if(this.hasDateSameDay(this.selectedDate?.date, new Date())){
-      this.changeCalendarDisplayMode("today");
+      this.setCalendarToTodayView();
     }else{
-      this.changeCalendarDisplayMode("day");
+      this.setCalendarToDayView();
     }
 
     this.calendarData?.calendarDays.forEach(day => {

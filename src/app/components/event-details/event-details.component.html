@@ -23,7 +23,7 @@
             class="event-date-day-input"
             id="event-date-day-input"
             name="eventDateDay"
-            value="{{this.currentEventDate.dateTime.toISOString().substr(0, 10)}}">
+            value="{{this.currentEvent.eventDate.dateTime.toISOString().substr(0, 10)}}">
           <select
             class="event-date-time-select" id="event-date-time-select">
             <option *ngFor="let possibleHour of possibleHours; let i = index" value="{{possibleHour}}">

@@ -22,6 +22,10 @@ export class CalendarEventService {
     return this.http.get(this.baseUrl + "/calendarEvent/all/user").pipe();
   }
 
+  getCalendarEventsByDateRange(startDate: string, endDate: string){
+    return this.http.get(this.baseUrl + "/calendarEvent/all?startDate=" + startDate + "&endDate=" + endDate).pipe();
+  }
+
   saveEvent(calendarEvent:CalendarEvent, isPrivate: boolean){
     return this.http.post(this.baseUrl + "/calendarEvent?isPrivate=" + isPrivate, calendarEvent);
   }

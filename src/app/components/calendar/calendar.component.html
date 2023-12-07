@@ -3,7 +3,7 @@
     <div class="calendar-header-wrapper">
       <ul>
         <!-- (click)="changeCalendarDisplayMode('week')" -->
-        <li #monthView (click)="changeCalendarDisplayMode('month')" class="active">
+        <li #monthView (click)="this.setCalendarToMonthView()" class="active">
           <i class="fa-solid fa-calendar-days"></i>
           <span class="calendar-view-text"> Monat </span>
         </li>
@@ -11,17 +11,16 @@
           <i #weekView class="fa-solid fa-calendar-week disabled"></i>
           <span class="calendar-view-text"> Woche </span>
         </li>
-        <li #dayView (click)="changeCalendarDisplayMode('day')">
+        <li #dayView (click)="this.setCalendarToDayView()">
           <i class="fa-solid fa-calendar-day"></i>
           <span class="calendar-view-text"> Tag </span>
         </li>
-        <li #todayView (click)="changeCalendarDisplayMode('today')">
+        <li #todayView (click)="this.setCalendarToTodayView()">
           <i class="fa-solid fa-calendar-xmark"></i>
           <span class="calendar-view-text"> Heute </span>
         </li>
-        <!-- (click)="changeCalendarDisplayMode('event')" -->
-        <li #eventView class="hidden">
-          <i class="fa-regular fa-calendar disabled"></i>
+        <li #eventView (click)="this.setCalendarToEventView()">
+          <i class="fa-regular fa-calendar"></i>
           <span class="calendar-view-text"> Events </span>
         </li>
       </ul>
@@ -71,3 +70,10 @@
   (setSelectedDayEmitter)="setSelectedDay($event)"
   (changeEventDetailsEmitter)="changeEventDetails($event)"
 ></app-day-view>
+<app-event-view
+  *ngIf="this.currentUser && this.selectedDate"
+  #calendarEventViewWrapper
+  [selectedDate]="this.selectedDate"
+  [currentUser]="this.currentUser"
+  (changeEventDetailsEmitter)="changeEventDetails($event)">
+</app-event-view>
