@@ -255,8 +255,8 @@ export class CalendarComponent implements OnInit {
   }
 
   setCalendarToEventView(){
-    if(this.currentCalendarViewMode == "event"){
-      return
+    if(this.currentCalendarViewMode == "event" || !this.currentUser){
+      return;
     }
     this.currentCalendarViewMode = "event";
 

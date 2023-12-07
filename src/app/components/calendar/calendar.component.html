@@ -19,7 +19,7 @@
           <i class="fa-solid fa-calendar-xmark"></i>
           <span class="calendar-view-text"> Heute </span>
         </li>
-        <li #eventView (click)="this.setCalendarToEventView()">
+        <li #eventView (click)="this.setCalendarToEventView()" [class.disabled]="!this.currentUser">
           <i class="fa-regular fa-calendar"></i>
           <span class="calendar-view-text"> Events </span>
         </li>
