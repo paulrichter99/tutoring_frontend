@@ -36,7 +36,9 @@
         <i class="fa-solid fa-chevron-down icon-next-month"></i>
       </button>
       <!-- TODO: Make this a dropdown selection -->
-      <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div>
+      <input  type="month" id="calendar-current-selected-month"
+              [value]="currentSelectedMonth" (change)="this.setCurrentSelectedMonth($event)">
+      <!-- <div>{{ getMonthName(currentMonth.month) }} {{ currentMonth.year }}</div> -->
     </div>
     <div class="calendar-weekdays">
       <div *ngFor="let day of weekDays" class="weekday"> <div> {{day}} </div> </div>

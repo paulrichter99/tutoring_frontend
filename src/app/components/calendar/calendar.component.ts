@@ -47,6 +47,8 @@ export class CalendarComponent implements OnInit {
   currentCalendarViewMode: string = "month";
   currentUser: User | null = null;
 
+  currentSelectedMonth: string = "";
+
   constructor(private calenderEventService: CalendarEventService,
               private storageService: StorageService,
               public calendarService: CalendarService)
@@ -88,6 +90,7 @@ export class CalendarComponent implements OnInit {
     }
     this.emptyCellsBefore = [];
     this.emptyCellsAfter = [];
+    this.changeCurrentSelectedMonth();
 
     // Calculate the number of empty cells needed to align the first day of the month.
     // 0 for Sunday, 1 for Monday, ...
@@ -175,6 +178,27 @@ export class CalendarComponent implements OnInit {
       this.currentMonth.year = this.selectedDate!.date.getFullYear();
     }
     this.generateCalendar();
+  }
+  setCurrentSelectedMonth(e:Event) {
+    const element = <HTMLInputElement>e.target
+
+    if(element.value != "" && element.value){
+      this.currentSelectedMonth = element.value
+    }else{
+      return;
+    }
+
+    const newDate = new Date(this.currentSelectedMonth);
+    this.currentMonth.month = newDate.getMonth();
+    this.currentMonth.year = newDate.getFullYear();
+    this.generateCalendar();
+  }
+
+  changeCurrentSelectedMonth(){
+    this.currentSelectedMonth =
+      this.currentMonth.year +
+      "-" +
+      ("0" + (this.currentMonth.month + 1)).toString().slice(-2);
   }
 
   // Function to handle date selection.
