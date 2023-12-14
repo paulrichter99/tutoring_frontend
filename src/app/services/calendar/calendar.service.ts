@@ -73,4 +73,12 @@ export class CalendarService {
     endTime = fullHour.toString() + ":" + minutes.toString()
     return endTime
   }
+
+  // this is more of a util function
+  convertDateData(calendarEvents: CalendarEvent[]){
+    calendarEvents.forEach(calendarEvent => {
+        let angularDate:Date = new Date(calendarEvent.eventDate.dateTime)
+        calendarEvent.eventDate.dateTime = angularDate;
+    })
+  }
 }

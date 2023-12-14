@@ -60,12 +60,12 @@ header {
 .nav-item a {
   text-decoration: none;
   color: #f5f6fa; /* Tab text color */
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nav-item a.active {
   color: $color-active-tab; /* Active tab text color */
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .logo {
@@ -257,7 +257,7 @@ header {
         }
 
         a {
-          font-weight: 300;
+          font-weight: 600;
         }
       }
     }
@@ -266,7 +266,7 @@ header {
       color: $base-color;
       background-color: transparent;
       font: inherit;
-      font-weight: 300;
+      font-weight: 600;
       border: none;
       margin: 0;
       padding: 0;
