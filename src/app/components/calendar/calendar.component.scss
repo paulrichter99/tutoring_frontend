@@ -10,8 +10,8 @@
   height: calc(100vh - $header-height);
 
   text-align: center;
-
-  overflow-y: scroll
+  overflow: hidden;
+  overflow-y: scroll;
 }
 
 .calendar-wrapper {
@@ -151,6 +151,8 @@
       margin-bottom: 10px;
       margin-left: -20px;
     }
+
+
 
     input:focus {
       outline: none;
@@ -326,6 +328,15 @@ button {
         background-color: rgba(#ccc, 0.3);
       }
     }
+  }
+
+  input[type='month'] {
+    background-color: transparent;
+  }
+
+  input[type="month"]:after {
+    height: 30px;
+    content: '' !important;
   }
 
   .calendar-actions {
