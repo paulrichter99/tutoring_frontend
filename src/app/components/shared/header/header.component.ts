@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostBinding, Input, OnInit, ViewC
 import { User } from 'src/app/interface/user';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
-import { ACCESS_TOKEN, HEADER_HEIGHT_MOBILE, USER_DATA } from 'src/app/variables/variables';
+import { ACCESS_TOKEN, BASE_PROFILE_PATH, HEADER_HEIGHT_MOBILE, USER_DATA } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +15,8 @@ export class HeaderComponent{
   @ViewChild('dropdownContent', { static: true }) dropdownContent!: ElementRef;
 
   @Input() user: User | null = null;
+
+  baseProfilePath = BASE_PROFILE_PATH;
 
   dropdownIsOpen: boolean = false;
 

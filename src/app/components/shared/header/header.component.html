@@ -28,7 +28,8 @@
       <button class="nav-dropdown-btn" (click)="performDropdownClick()"> <i class="fa-solid fa-bars"> </i> </button>
       <div class="dropdown-content" #dropdownContent>
         <div class="dropdown-greeting">
-          <i class="fa-solid fa-circle-user"></i> Hallo, {{this.user?.username}}
+          <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'" width="60" height="60">
+           Hallo, {{this.user?.username}}
         </div>
         <div class="dropdown-menu-list">
           <a routerLink="/profile" routerLinkActive="active" (click)="hideFixedMenu()">

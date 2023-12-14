@@ -1,9 +1,9 @@
 <div class="profile-wrapper">
   <div class="profile-navigation">
-    <img id="profile-picture" src="assets/gfx/logo/logo_paulrichter_tutoring_black.png" width="150">
+    <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'" width="170" height="170" (click)="openProfileImageModal()">
     <div class="active" (click)="showPersonalSettings()"> Persönliche Daten </div>
-    <div (click)="showSecretSettings()"> Passwort und Benutzername </div>
-    <div (click)="showAppSettings()"> App Einstellungen </div>
+    <div (click)="showSecretSettings()" class="disabled"> Passwort und Benutzername </div>
+    <div (click)="showAppSettings()" class="disabled"> App Einstellungen </div>
   </div>
   <div class="profile-settings">
     <!--
@@ -57,5 +57,20 @@
         <div id="save-text"> </div>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="profile-picture-modal"
+     #profilePictureModal style="display: none;"
+     (click)="closeProfileImageModal();">
+  <div class="profile-picture-edit-wrapper" (click)="$event.stopPropagation()">
+    <div class="profile-picture-wrapper">
+      <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'" width="200">
+    </div>
+    <div class="profile-picture-actions">
+      <div class="image-upload-wrapper">
+        <input id="profile-picture-upload" type="file" accept="image/*" (change)="onImageUpload($event)">
+      </div>
+    </div>
   </div>
 </div>

@@ -1,10 +1,11 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { User } from 'src/app/interface/user';
 import { UserSettings } from 'src/app/interface/userSettings';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
+import { BASE_PROFILE_PATH, BASE_URL } from 'src/app/variables/variables';
 
 @Component({
   selector: 'app-profile',
@@ -12,8 +13,12 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit{
+  @ViewChild('profilePictureModal', { static: true }) profilePictureModal!: ElementRef;
+
   user: User | null = null;
   currentSettingShown: string = "personal";
+
+  baseProfilePath = BASE_PROFILE_PATH;
 
   constructor(
     private storageService: StorageService,
@@ -95,17 +100,34 @@ export class ProfileComponent implements OnInit{
         saveTextElement.style.color = "#dc3545";
       }
     })
+  }
 
-    /*
+  openProfileImageModal() {
+    this.profilePictureModal.nativeElement.style.display = "flex";
+  }
+  closeProfileImageModal(){
+    this.profilePictureModal.nativeElement.style.display = "none";
+  }
 
-    this.newSettingsForm = this.formBuilder.group({
-      username: this.user?.username,
-      firstName: this.user?.firstName,
-      lastName: this.user?.lastName,
-      birthday: this.user?.birthDay,
-      email: this.user?.email,
-    });
+  onImageUpload(event: Event){
+    const uploadElement = document.getElementById("profile-picture-upload") as HTMLInputElement;
 
-    */
+    const files = uploadElement.files as FileList;
+
+    if (files.length > 0) {
+      const _file = files[0]
+      this.userService.uploadProfilePicture(_file).subscribe({
+        next: data => {
+          this.user = data as User;
+          this.storageService.saveUserData(this.user);
+          window.location.reload();
+        },
+        error: e => {
+          console.error("Image could not be uploaded")
+        }
+      });
+    }
+
+    uploadElement.value = "";
   }
 }

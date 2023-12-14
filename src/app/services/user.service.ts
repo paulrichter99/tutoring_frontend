@@ -31,4 +31,13 @@ export class UserService {
   public saveUserSettings(userSettings: UserSettings){
     return this.httpClient.put(this.baseUrl + "/settings", userSettings).pipe();
   }
+
+  public uploadProfilePicture(file: File){
+    var formData: FormData = new FormData();
+    formData.append('file', file);
+
+    console.log(formData.get('file'))
+
+    return this.httpClient.post(this.baseUrl + "/profilePicture" , formData).pipe();
+  }
 }
