@@ -6,6 +6,146 @@
   top: $header-height;
   width: 100%;
   height: calc(100vh - $header-height);
+  background-color: $base-color-bg;
+  overflow-y: scroll;
+}
 
-  text-align: center;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.home-wrapper::-webkit-scrollbar,
+:host::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.home-wrapper, :host{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.home-wrapper{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: max-content;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+
+  z-index: 100;
+
+  user-select: none;
+
+  .home-greeting{
+    color: $base-color;
+
+    width: 100%;
+    max-width: 1300px;
+
+    margin-top: 25svh;
+
+    font-size: 30px;
+    border-radius: 5px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > div {
+      max-width: 600px;
+      width: 80%;
+    }
+
+    .upper-text {
+      color: rgba($color:$base-color, $alpha: 0.5);
+      font-size: 24px;
+
+      margin-bottom: 10px;
+    }
+
+    .main-text{
+      display: flex;
+      flex-direction: row;
+      font-size: 38px;
+      .pipe {
+        font-size: 41px;
+        margin: 0 15px;
+        margin-top: -6px;
+      }
+
+      margin-bottom: 10px;
+    }
+
+    .home-logo {
+      display: none;
+    }
+  }
+}
+
+.home-image {
+  position: fixed;
+
+  width: 100%;
+  height: 100svh;
+
+  background: url("../../../assets/gfx/home_background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+
+  background-attachment: scroll;
+
+  z-index: 1;
+
+  opacity: 0.4;
+}
+
+
+@media (max-width: 1300px){
+  .home-greeting{
+    margin-top: 12svh !important;
+
+    > div {
+      text-align: center;
+    }
+
+    .upper-text {
+      margin-bottom: 20px;
+    }
+
+    .main-text {
+      flex-direction: column !important;
+      align-items: center;
+      font-size: 40px !important;
+
+      .pipe {
+        display: none;
+      }
+    }
+
+    .home-logo {
+      display: block !important;
+      margin-top: 10svh;
+      width: 70% !important;
+      max-width: 350px !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      > img{
+        width: 100%;
+        background-color: rgba($base-color-bg, 0.9);
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+/* Mobile version adjustments */
+@media (max-width: 750px){
+  :host {
+    height: calc(100svh - $header-height-mobile);
+    top: $header-height-mobile;
+  }
 }
