@@ -8,7 +8,7 @@ import {
   animateChild
 } from '@angular/animations';
 
-const animationDuration = "0.5s ease"
+const animationDuration = "0.4s ease"
 
 export const slideInAnimation =
   trigger('routeAnimations', [
