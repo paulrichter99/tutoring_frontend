@@ -62,6 +62,7 @@ export class DayViewComponent{
   calculateEventWrapperHeight(hourPerDay: CalendarDate){
     if(!hourPerDay.event) return 29;
     var newHeight = hourPerDay.event.eventDuration - ((hourPerDay.dateTime.getTime() - hourPerDay.event.eventDate.dateTime.getTime()) / 60000);
-    return newHeight - 1;
+    newHeight -= 1;
+    return (newHeight);
   }
 }

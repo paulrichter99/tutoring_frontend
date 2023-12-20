@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoginRequest, User } from '../interface/user';
 import { BASE_URL } from '../variables/variables';
+import { UserSettings } from '../interface/userSettings';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,18 @@ export class UserService {
 
   public getUsers(): Observable<any> {
     return this.httpClient.get(this.baseUrl + "/all").pipe();
+  }
+
+  public saveUserSettings(userSettings: UserSettings){
+    return this.httpClient.put(this.baseUrl + "/settings", userSettings).pipe();
+  }
+
+  public uploadProfilePicture(file: File){
+    var formData: FormData = new FormData();
+    formData.append('file', file);
+
+    console.log(formData.get('file'))
+
+    return this.httpClient.post(this.baseUrl + "/profilePicture" , formData).pipe();
   }
 }

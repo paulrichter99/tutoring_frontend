@@ -25,17 +25,17 @@
   <!--this is used for the dropdown for web-view (screen > 750px)-->
   <ul class="dropdown" #dropdown [class.user-present]="this.user">
     <li class="nav-item">
-      <button class="nav-dropdown-btn" (click)="performDropdownClick()"> <i class="fa-solid fa-bars"> </i> </button>
+      <button class="nav-dropdown-btn" (click)="performDropdownClick()">
+        <img [src]="this.baseProfilePath + this.user?.username + '.png'">
+      </button>
       <div class="dropdown-content" #dropdownContent>
         <div class="dropdown-greeting">
-          <i class="fa-solid fa-circle-user"></i> Hallo, {{this.user?.username}}
+          <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'">
+           Hallo, {{this.user?.firstName ? this.user!.firstName! : this.user?.username}}!
         </div>
         <div class="dropdown-menu-list">
           <a routerLink="/profile" routerLinkActive="active" (click)="hideFixedMenu()">
             <i class="fa-solid fa-user"></i>Mein Profil
-          </a>
-          <a routerLink="/" routerLinkActive="active" (click)="hideFixedMenu()">
-            <i class="fa-solid fa-gear"></i>Einstellungen
           </a>
           <a (click)="logout()">
               <i class="fa-solid fa-right-from-bracket"></i>Logout
@@ -54,7 +54,7 @@
       <ul class="nav-tabs">
         <li class="nav-item">
           <a routerLink="/home" routerLinkActive="active" (click)="hideFixedMenu()">
-            <i class="fa-solid fa-gear"> </i>Startseite
+            <i class="fa-solid fa-book"> </i>Startseite
           </a>
         </li>
         <li class="nav-item">

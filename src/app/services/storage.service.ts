@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../interface/user';
 import { ACCESS_TOKEN, USER_DATA } from '../variables/variables';
+import { UserSettings } from '../interface/userSettings';
 
 @Injectable({
   providedIn: 'root'
@@ -32,5 +33,16 @@ export class StorageService {
 
   removeLocalUserData(){
     localStorage.removeItem(USER_DATA);
+  }
+
+  /* This is only for local/browser settings e.g. colors */
+  saveLocalUserSettings(userSettings: UserSettings){
+    localStorage.setItem('userSettings', JSON.stringify(userSettings))
+  }
+
+  getLocalUserSettings(): UserSettings | null {
+    const userSettingsString = localStorage.getItem('userSettings');
+    if(!userSettingsString) { return null; }
+    return JSON.parse(userSettingsString);
   }
 }

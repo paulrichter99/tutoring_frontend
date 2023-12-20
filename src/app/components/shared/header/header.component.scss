@@ -28,6 +28,18 @@ header {
   color: $base-color;
   font-size: 25px;
   width: 130px;
+
+  >img{
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    transition: 0.2s ease;
+  }
+  >img:hover{
+    width: 85px;
+    height: 85px;
+    transition: 0.2s ease;
+  }
 }
 
 .nav-content {
@@ -60,12 +72,12 @@ header {
 .nav-item a {
   text-decoration: none;
   color: #f5f6fa; /* Tab text color */
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nav-item a.active {
-  color: $color-active-tab; /* Active tab text color */
-  font-weight: 600;
+  color: $color-active-tab !important; /* Active tab text color */
+  font-weight: 700;
 }
 
 .logo {
@@ -131,6 +143,13 @@ header {
       .fa-circle-user{
         font-size: 45px;
         margin-right: 20px;
+      }
+
+      #profile-picture{
+        border-radius: 50%;
+        margin-right: 20px;
+        width: 70px;
+        height: 70px;
       }
     }
 
@@ -257,7 +276,7 @@ header {
         }
 
         a {
-          font-weight: 300;
+          font-weight: 600;
         }
       }
     }
@@ -266,7 +285,7 @@ header {
       color: $base-color;
       background-color: transparent;
       font: inherit;
-      font-weight: 300;
+      font-weight: 600;
       border: none;
       margin: 0;
       padding: 0;

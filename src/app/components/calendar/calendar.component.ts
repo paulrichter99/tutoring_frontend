@@ -323,16 +323,8 @@ export class CalendarComponent implements OnInit {
         }
       }
     }
-    this.convertDateData();
+    this.calendarService.convertDateData(this.calendarEvents);
     this.generateCalendar();
-  }
-
-  // this is more of a util function
-  convertDateData(){
-    this.calendarEvents?.forEach(calendarEvent => {
-        let angularDate:Date = new Date(calendarEvent.eventDate.dateTime)
-        calendarEvent.eventDate.dateTime = angularDate;
-    })
   }
 
   changeEventDetails(updatedEvent: CalendarEvent){

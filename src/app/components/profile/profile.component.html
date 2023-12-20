@@ -1,1 +1,76 @@
-<p>profile works!</p>
+<div class="profile-wrapper">
+  <div class="profile-navigation">
+    <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'" width="170" height="170" (click)="openProfileImageModal()">
+    <div class="active" (click)="showPersonalSettings()"> Persönliche Daten </div>
+    <div (click)="showSecretSettings()" class="disabled"> Passwort und Benutzername </div>
+    <div (click)="showAppSettings()" class="disabled"> App Einstellungen </div>
+  </div>
+  <div class="profile-settings">
+    <!--
+    <div class="image-wrapper">
+      <img id="profile-picture" src="assets/gfx/logo/logo_paulrichter_tutoring_black.png" width="200">
+      <div class="image-actions">
+        <div> <button id="change-btn"> Change Picture </button> </div>
+        <div> <button id="remove-btn"> Delete Picture </button> </div>
+      </div>
+    </div>
+    -->
+    <form id="personal-data-form" [formGroup]="newSettingsForm!" class="personal-info-settings" (ngSubmit)="submitSettings()">
+
+      <label> Benutzername </label>
+      <input type="text" placeholder="Benutzername" formControlName="username">
+
+      <div class="grouped-inputs">
+        <div>
+          <label> Vorname </label>
+          <input type="text" placeholder="Vorname" formControlName="firstName">
+        </div>
+        <div>
+          <label> Nachname </label>
+          <input type="text" placeholder="Nachname" formControlName="lastName">
+        </div>
+      </div>
+
+      <label> Adresse </label>
+      <input type="text" placeholder="Adresse" formControlName="address">
+      <label> Geburtstag </label>
+      <input type="date" placeholder="Geburtstag" formControlName="birthday">
+
+      <label> Email </label>
+      <input type="email" placeholder="Email" formControlName="email">
+      <label> Handynummer </label>
+      <input type="text" placeholder="Handynummer" formControlName="phoneNumber">
+
+      <div class="grouped-inputs">
+        <div id="grade-input-wrapper">
+          <label> Klasse </label>
+          <input type="number" placeholder="Klasse" formControlName="grade">
+        </div>
+        <div id="school-input-wrapper">
+          <label> Schule </label>
+          <input type="text" placeholder="Schule" formControlName="school">
+        </div>
+      </div>
+
+      <div class="grouped-inputs">
+        <button id="btn-submit" type="submit"> Speichern </button>
+        <div id="save-text"> </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="profile-picture-modal"
+     #profilePictureModal style="display: none;"
+     (click)="closeProfileImageModal();">
+  <div class="profile-picture-edit-wrapper" (click)="$event.stopPropagation()">
+    <div class="profile-picture-wrapper">
+      <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'" width="200">
+    </div>
+    <div class="profile-picture-actions">
+      <div class="image-upload-wrapper">
+        <input id="profile-picture-upload" type="file" accept="image/*" (change)="onImageUpload($event)">
+      </div>
+    </div>
+  </div>
+</div>

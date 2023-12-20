@@ -21,24 +21,28 @@ export class AppComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private storageService: StorageService){}
+    private storageService: StorageService) {
+  }
 
   user: User | null = null;
 
   ngOnInit(): void {
+    this.user = this.storageService.getLocalUserData();
     if(document.body.offsetWidth < 750){
       this.isMobile = true;
     }
+
     if(localStorage.getItem("jwt_token")){
       this.userService.getUserData().subscribe({
-        next: (userData) => {
-          this.user = userData;
+        next: (userData: any) => {
+          this.user = <User>userData;
           this.storageService.saveUserData(this.user!);
         },
-        error: (e) => console.error(e)
+        error: (e) => {
+          console.error(e)
+        }
       })
     }
-    this.user = this.storageService.getLocalUserData();
   }
 
   @HostListener('window:resize', ['$event'])
