@@ -49,8 +49,10 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
   ngOnInit(): void {
     this.currentUser = this.storageService.getLocalUserData();
     if(!(this.currentEvent?.id))  this.isPlaceholderEvent = true;
-    this.allUsers = this.storageService.getAllUser();
-    this.allUsers?.forEach(user => this.possibleUsernames?.push(user.username))
+    if(this.currentUser?.isTutor) {
+      this.allUsers = this.storageService.getAllUser();
+      this.allUsers?.forEach(user => this.possibleUsernames?.push(user.username));
+    }
   }
 
   ngAfterViewInit(): void {

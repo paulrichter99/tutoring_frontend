@@ -57,4 +57,8 @@ export class StorageService {
 
     return JSON.parse(usersString);
   }
+
+  deleteAllUsernames(){
+    localStorage.removeItem('users')
+  }
 }

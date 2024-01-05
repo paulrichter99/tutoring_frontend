@@ -31,7 +31,7 @@
             </option>
           </select>
         </div>
-        <div class="event-users" *ngIf="this.possibleUsernames">
+        <div class="event-users" *ngIf="this.currentUser?.isTutor">
           <multi-select class="user-select"
             [options]="possibleUsernames"
             [currentValues]="getCurrentEventUsernames()"

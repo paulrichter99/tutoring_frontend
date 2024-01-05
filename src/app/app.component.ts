@@ -38,8 +38,12 @@ export class AppComponent implements OnInit {
           this.user = <User>userData;
           this.storageService.saveUserData(this.user!);
 
-          if(this.user.isTutor) this.getAllUsernames();
-          else console.log("not tutor")
+          if(this.user.isTutor){
+            this.getAllUsernames();
+          }
+          else{
+            this.storageService.deleteAllUsernames();
+          }
         },
         error: (e) => {
           console.error(e)
