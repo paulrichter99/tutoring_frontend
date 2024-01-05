@@ -31,6 +31,12 @@
             </option>
           </select>
         </div>
+        <div class="event-users" *ngIf="this.currentUser?.isTutor">
+          <multi-select class="user-select"
+            [options]="possibleUsernames"
+            [currentValues]="getCurrentEventUsernames()"
+            (changeSelectArray)="changeUserParticipation($event)"> </multi-select>
+        </div>
         <div class="event-duration">
           <select class="event-duration-select"  id="event-duration-select" value="{{this.currentEvent.eventDuration}}">
             <option value="60"> 60 min </option>

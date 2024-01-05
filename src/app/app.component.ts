@@ -37,6 +37,13 @@ export class AppComponent implements OnInit {
         next: (userData: any) => {
           this.user = <User>userData;
           this.storageService.saveUserData(this.user!);
+
+          if(this.user.isTutor){
+            this.getAllUsernames();
+          }
+          else{
+            this.storageService.deleteAllUsernames();
+          }
         },
         error: (e) => {
           console.error(e)
@@ -58,5 +65,14 @@ export class AppComponent implements OnInit {
     return outlet &&
       outlet.activatedRouteData &&
       outlet.activatedRouteData['animation'];
+   }
+
+   getAllUsernames(){
+    this.userService.getUsers().subscribe({
+      next: data => {
+        this.storageService.saveAllUser(data as User[])
+      },
+      error: e => console.error(e)
+    })
    }
 }

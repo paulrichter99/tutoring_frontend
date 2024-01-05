@@ -43,6 +43,22 @@ export class StorageService {
   getLocalUserSettings(): UserSettings | null {
     const userSettingsString = localStorage.getItem('userSettings');
     if(!userSettingsString) { return null; }
+
     return JSON.parse(userSettingsString);
+  }
+
+  saveAllUser(allUser: User[]){
+    localStorage.setItem('users', JSON.stringify(allUser))
+  }
+
+  getAllUser(): User[] | null{
+    const usersString = localStorage.getItem('users');
+    if(!usersString) { return null; }
+
+    return JSON.parse(usersString);
+  }
+
+  deleteAllUsernames(){
+    localStorage.removeItem('users')
   }
 }

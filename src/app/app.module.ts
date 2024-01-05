@@ -17,6 +17,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { EventDetailsComponent } from './components/event-details/event-details.component';
 import { DayViewComponent } from './components/calendar/day-view/day-view.component';
 import { EventViewComponent } from './components/calendar/event-view/event-view.component';
+import { MultiSelectComponent } from './components/shared/multi-select/multi-select.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { EventViewComponent } from './components/calendar/event-view/event-view.
     EventDetailsComponent,
     DayViewComponent,
     EventViewComponent,
+    MultiSelectComponent,
   ],
   imports: [
     BrowserModule,
