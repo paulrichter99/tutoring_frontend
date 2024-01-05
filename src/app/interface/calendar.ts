@@ -24,7 +24,7 @@ export interface CalendarDate {
   // important are hours and minutes
   id?: number;
   dateTime: Date;
-  event?: CalendarEvent;
+  events?: CalendarEvent[];
   showEvent?: boolean | null;
 }
 

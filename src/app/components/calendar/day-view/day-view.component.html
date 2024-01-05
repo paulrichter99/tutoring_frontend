@@ -15,42 +15,46 @@
       <div class="time-table-column events-column">
         <div  *ngFor="let hourPerDay of selectedDate.hoursPerDay; let i = index"
               class="time-table-row events-row"
-              [class.hour-has-event]="hourPerDay.event && hourPerDay.event.id"
-              [class.partOf-previous-event]="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate)"
-              [style.height.px]="(hourPerDay.event && hourPerDay.event.id) ? calculateEventWrapperHeight(hourPerDay) : null"
+              [class.hoverable]="this.currentUser"
         >
           <div  class="event-slot"
-                [class.empty-event-slot]="hourPerDay.event == null || hourPerDay.event!.id == null"
-                [class.filled-event-slot]="hourPerDay.event && hourPerDay.event.id"
-                [class.hoverable]="this.currentUser && !(hourPerDay.event?.isAnonymousEvent)"
-                (click)="selectEvent(hourPerDay)"
+                (click)="selectEvent(hourPerDay, true)"
           >
-            <app-event-details
-              *ngIf="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate) == false
-              && hourPerDay.showEvent == true
-              && hourPerDay.event ? !(hourPerDay.event.isAnonymousEvent) : false"
-              [currentEvent]="hourPerDay.event ? hourPerDay.event : null"
-              [currentEventDate]="hourPerDay"
-              [currentCalendarDay]="selectedDate"
-              (changeEventDetails)="changeEventDetails($event)"
-            ></app-event-details>
-            <div *ngIf="hourPerDay.event
-                  && hourPerDay.event.id
-                  && !(hourPerDay.event.isAnonymousEvent)"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
+            <div *ngFor="let event of hourPerDay.events"
+                class="event"
+                [class.empty-event-slot]="event.id == null"
+                [class.filled-event-slot]="event.id && event.id > 0"
+                [style.height.px]="event.eventDuration - 10 + event.eventDuration/30"
+                [style.marginTop.px]="5"
+                (click)="selectEvent(hourPerDay)"
             >
-              {{hourPerDay.event.eventName}}
-              <div>
-                &nbsp; | &nbsp; {{calendarService.calculateTime(hourPerDay.event.eventDate.dateTime, 0)}} Uhr -
-                {{calendarService.calculateTime(hourPerDay.event.eventDate.dateTime, hourPerDay.event.eventDuration)}} Uhr
+              <app-event-details
+                *ngIf="this.calendarService.checkIfPartOfPreviousEvent(i, selectedDate) == false
+                && hourPerDay.showEvent == true
+                && hourPerDay.events ? !(event.isAnonymousEvent) : false"
+                [currentEvent]="event ? event : null"
+                [currentEventDate]="hourPerDay"
+                [currentCalendarDay]="selectedDate"
+                (changeEventDetails)="changeEventDetails($event)"
+              ></app-event-details>
+              <div class="event-data" *ngIf="event && event.id">
+                <div *ngIf="!(event.isAnonymousEvent)"
+                style="height: 1rem; overflow: hidden; line-height: 1rem;"
+                >
+                  {{event.eventName}}
+                  <div>
+                    &nbsp; | &nbsp; {{calendarService.calculateTime(event.eventDate.dateTime, 0)}} Uhr -
+                    {{calendarService.calculateTime(event.eventDate.dateTime, event.eventDuration)}} Uhr
+                  </div>
+                </div>
+                <div *ngIf="event && event.isAnonymousEvent"
+                      style="height: 1rem; overflow: hidden; line-height: 1rem;"
+                >
+                      Bereits blockiert
+                </div>
+              </div>
               </div>
             </div>
-            <div *ngIf="hourPerDay.event && hourPerDay.event.isAnonymousEvent"
-                  style="height: 1rem; overflow: hidden; line-height: 1rem;"
-            >
-                  Bereits blockiert
-            </div>
-          </div>
         </div>
       </div>
     </div>

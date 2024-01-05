@@ -34,7 +34,7 @@ export class CalendarEventService {
     return this.http.put(this.baseUrl + "/calendarEvent/" + calendarEvent.id, calendarEvent);
   }
 
-  checkEventDateValidity(
+  /*checkEventDateValidity(
       newDate: Date,
       eventDurationSelectElement: HTMLSelectElement,
       currentCalendarDay: CalendarDay,
@@ -44,7 +44,7 @@ export class CalendarEventService {
 
     for(let calendarDate of currentCalendarDay.hoursPerDay){
       // if calendarDate has an event and id is not the same as the edited/new event
-      if(calendarDate.event && !(calendarDate.event.id == currentEvent.id)){
+      if(calendarDate.events && !(calendarDate.event.id == currentEvent.id)){
         // we now have to check if the newDate is interfering with the event in that time slot
         // check if we have seen the event id. we compare events not time-slots
         if(!seenEventIds.includes(calendarDate.event.id ? calendarDate.event.id : -2)){
@@ -78,5 +78,5 @@ export class CalendarEventService {
       }
     }
     return true;
-  }
+  }*/
 }

@@ -22,29 +22,28 @@ export class CalendarService {
       startIndex *= 2;
 
       // now we have to respect the duration as well
-      const endIndex = startIndex + (Math.ceil(calendarEvent.eventDuration / 30)) - 1;
+      // const endIndex = startIndex + (Math.ceil(calendarEvent.eventDuration / 30)) - 1;
 
       // check the current time slot. We have to keep in mind, that the endIndex points to the end-time
       //  since a hourPerDay is representing a timeSlot (12:00 - 12:30), we have to do endIndex -= 1
       if(correctDay.hoursPerDay[startIndex].dateTime.toISOString() == calendarDate.dateTime.toISOString()){
-        for(let i = startIndex; i <= endIndex; i++){
-          correctDay.hoursPerDay[i].event = calendarEvent;
+          if(!correctDay.hoursPerDay[startIndex].events) correctDay.hoursPerDay[startIndex].events = [];
+          correctDay.hoursPerDay[startIndex].events!.push(calendarEvent);
           correctDay.hasEvent = true;
-        }
       }
     }
   }
 
   checkIfPartOfPreviousEvent(index: number, selectedDate: CalendarDay): boolean{
     var check: boolean = false;
-    if(index > 0){
+    /*if(index > 0){
       if( selectedDate.hoursPerDay[index-1].event &&
         selectedDate.hoursPerDay[index].event &&
           (selectedDate.hoursPerDay[index].event?.id == selectedDate.hoursPerDay[index-1].event?.id)
       ){
         check = true;
       }
-    }
+    }*/
     return check;
   }
 

@@ -62,10 +62,19 @@
     display: flex;
     flex-direction: column;
   }
+
   .times-column {
     border: 1px solid rgba(204, 204, 204, 0.6);
     width: 70px;
   }
+
+  .times-row{
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+  }
+
   .time-slot {
     padding: 0;
     margin: 0;
@@ -73,12 +82,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 29px;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-  }
-  .times-row{
-    width: 100%;
+    height: 30px;
   }
 
   .events-column{
@@ -86,58 +90,56 @@
     border: 1px solid rgba(204, 204, 204, 0.6);
     border-left: none;
   }
-  .event-slot {
-    height: 29px;
-  }
-
-  .empty-event-slot.hoverable:hover{
-    background-color: rgba(#ccc,0.6);
-  }
-
-  .filled-event-slot.hoverable:hover{
-    background-color: rgba($base-color-bg-light, 0.9);
-  }
 
   .events-row{
     width: 100%;
-  }
-  .hour-has-event {
+    height: 30px;
     border-bottom: 1px solid #ccc;
+  }
+
+  .events-row.hoverable:hover{
+    background-color: rgba(#ccc,0.6);
+  }
+
+  .event-slot {
+    height: 30px;
+
+    .event{
+      position: relative;
+      width: calc(100% - 40px);
+      display: flex;
+      text-align: left;
+
+      margin-left: 10px;
+      border-radius: 5px;
+      color: $base-color;
+
+      .event-data{
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: $base-color-bg-light;
+      }
+
+      .event-data:hover{
+        background-color: rgba($base-color-bg-light, 0.5);
+      }
+    }
+  }
+
+  .hour-has-event {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: left;
   }
 
-  .partOf-previous-event{
+  .empty-event-slot{
     display: none;
   }
 
-  .empty-event-slot{
-    border-bottom: 1px solid #ccc;
-  }
-
   .filled-event-slot{
-    height: 70%;
-    width: calc(100% - 40px);
-    display: flex;
-    text-align: left;
-
-    padding: 5px 10px;
-    margin-left: 10px;
-    background-color: $base-color-bg-light;
-    border-radius: 5px;
-    color: $base-color;
-
-    div {
-      margin-top: 10px;
-      display: inline;
-      @media (max-width: 480px){
-        div{
-          display: none;
-        }
-      }
-    }
+    background-color: $base-color-bg-secondary;
   }
 }
 

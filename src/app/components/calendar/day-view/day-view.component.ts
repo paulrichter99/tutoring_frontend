@@ -20,20 +20,23 @@ export class DayViewComponent{
 
   // FIXME: There is a bug, where you cannot save an event properly, if it is overlapping another event
 
-  selectEvent(selectedEventDateTime: CalendarDate | null){
+  selectEvent(selectedEventDateTime: CalendarDate, newEvent?: boolean | null){
 
     if(!this.currentUser){ return; }
     // we check if the selectEvent actually is meant to be a new event
-    if(selectedEventDateTime?.event == null){
+    if(selectedEventDateTime.events == null || newEvent){
       // all times after 18:00 are only for the purpose of showing events, not for creating one at this time
       // therefore, we will set the max time to 18:00
       if(
-        (selectedEventDateTime?.dateTime.getHours()! == 18 && selectedEventDateTime?.dateTime.getMinutes()! != 0)
-        || selectedEventDateTime?.dateTime.getHours()! > 18){
-        selectedEventDateTime?.dateTime.setHours(18);
-        selectedEventDateTime?.dateTime.setMinutes(0);
+        (selectedEventDateTime.dateTime.getHours()! == 18 && selectedEventDateTime.dateTime.getMinutes()! != 0)
+        || selectedEventDateTime.dateTime.getHours()! > 18){
+        selectedEventDateTime.dateTime.setHours(18);
+        selectedEventDateTime.dateTime.setMinutes(0);
       }
-      selectedEventDateTime!.event =
+      if(!selectedEventDateTime.events){
+        selectedEventDateTime.events = [];
+      }
+      selectedEventDateTime.events.push(
         { "eventName": "",
           "eventDate": {"dateTime": selectedEventDateTime!.dateTime},
           "eventDescription": "",
@@ -41,6 +44,7 @@ export class DayViewComponent{
           "eventPlace":"home",
           "eventUsers": [this.currentUser!]
         }
+      )
     }
 
     if(selectedEventDateTime && !selectedEventDateTime.showEvent)
@@ -57,12 +61,5 @@ export class DayViewComponent{
 
   setTopStyle(newTopForDayView: string){
     this.calendarSingleDayWrapper.nativeElement.style.top = newTopForDayView;
-  }
-
-  calculateEventWrapperHeight(hourPerDay: CalendarDate){
-    if(!hourPerDay.event) return 29;
-    var newHeight = hourPerDay.event.eventDuration - ((hourPerDay.dateTime.getTime() - hourPerDay.event.eventDate.dateTime.getTime()) / 60000);
-    newHeight -= 1;
-    return (newHeight);
   }
 }

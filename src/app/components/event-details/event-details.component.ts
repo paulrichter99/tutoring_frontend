@@ -75,7 +75,7 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
 
   closeEventDetails(){
     if(this.isPlaceholderEvent){
-      this.currentEventDate!.event = undefined;
+      this.currentEventDate!.events?.slice(this.currentEventDate!.events.length - 1, 1);
       this.currentEvent = null;
     }
     if(this.currentEventDate)
@@ -114,12 +114,13 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     tempMatchingRules = this.checkEventNotInPastValidity(newDate, eventDateTimeSelectElement, eventDateDayInputElement);
     if(matchingRules && !tempMatchingRules) matchingRules = false;
 
-    tempMatchingRules = this.calendarEventService.checkEventDateValidity(
+    /*tempMatchingRules = this.calendarEventService.checkEventDateValidity(
       newDate,
       eventDurationSelectElement,
       this.currentCalendarDay!,
       this.currentEvent!
-    )
+    )*/
+    tempMatchingRules = true;
     if(!tempMatchingRules){
       this.errorMessage = "The anticipated day is already occupied by another event!"
       this.setElementNotMatchingRules(
