@@ -1,0 +1,32 @@
+<div class="select-wrapper">
+  <div class="select-header" (click)="performDropdownClick()">
+    <div class="dropdown-btn">
+      <i [class]="'fa-solid ' + chevronSymbolString"></i>
+    </div>
+    <div class="select-values-wrapper">
+      <div class="selected-value" *ngFor="let value of this.currentValues" (click)="performOptionClick(value); $event.stopPropagation()">
+        <div class="deselect-btn"> <i class="fa-solid fa-circle-xmark"></i> </div>
+        <div class="value-text"> {{value}} </div>
+      </div>
+    </div>
+  </div>
+  <div class="select-dropdown" #selectDropdown>
+    <div class="select-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" (keyup)="filterUsernames($event)">
+    </div>
+    <div
+      class="select-option"
+      *ngFor="let option of this.displayOptions"
+      (click)="performOptionClick(option)"
+      [class.selected]="this.currentValues.includes(option)"
+      >
+        <div class="selected-symbol">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="select-text">
+           {{option}}
+        </div>
+      </div>
+  </div>
+</div>

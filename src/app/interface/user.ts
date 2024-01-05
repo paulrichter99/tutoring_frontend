@@ -16,6 +16,7 @@ export interface User {
   schoolForm?: string;
 
   subjects?: string[];
+  isTutor?: boolean;
 
   calendarEvents: CalendarEvent[];
 }

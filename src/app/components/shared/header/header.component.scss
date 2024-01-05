@@ -35,11 +35,6 @@ header {
     border-radius: 50%;
     transition: 0.2s ease;
   }
-  >img:hover{
-    width: 85px;
-    height: 85px;
-    transition: 0.2s ease;
-  }
 }
 
 .nav-content {
@@ -222,6 +217,17 @@ header {
   .nav-dropdown-btn{
     width: auto;
     margin-right: 10px;
+    display: flex;
+    align-items: center;
+
+    > img {
+      width: 35px;
+      height: 35px;
+    }
+    > img:hover {
+      width: 35px;
+      height: 35px;
+    }
   }
 
   .nav-content {

@@ -5,7 +5,9 @@ import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { EventRepetitionEnum } from 'src/app/enum/EventRepetition';
 import { CalendarDate, CalendarDay, CalendarEvent } from 'src/app/interface/calendar';
+import { User } from 'src/app/interface/user';
 import { CalendarEventService } from 'src/app/services/calendar-event.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { HOURS_SELECTION, LOGGING } from 'src/app/variables/variables';
 
 @Component({
@@ -20,6 +22,8 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
 
   @Output() changeEventDetails = new EventEmitter<CalendarEvent>();
 
+  currentUser: User | null = null;
+
   logging = LOGGING;
 
   // this is not used yet
@@ -30,15 +34,23 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
   possibleHours = HOURS_SELECTION;
   isPlaceholderEvent: boolean = false;
   errorMessage = "";
+  allUsers: User[] | null = [];
 
-  constructor(private calendarEventService: CalendarEventService){
+  possibleUsernames: string[] = [];
+
+  constructor(
+    private calendarEventService: CalendarEventService,
+    private storageService: StorageService){
     // this is not used yet
     //this.eventRepetitionOptions = Object.values(this.eventRepetitionEnum)
     //this.eventRepetitionKeys = Object.keys(this.eventRepetitionEnum)
   }
 
   ngOnInit(): void {
+    this.currentUser = this.storageService.getLocalUserData();
     if(!(this.currentEvent?.id))  this.isPlaceholderEvent = true;
+    this.allUsers = this.storageService.getAllUser();
+    this.allUsers?.forEach(user => this.possibleUsernames?.push(user.username))
   }
 
   ngAfterViewInit(): void {
@@ -249,5 +261,36 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
       );
       this.errorMessage = "The anticipated day is already occupied by another event!"
     }
+  }
+
+  getCurrentEventUsernames() : string[]{
+    var eventUsernames: string[] = [];
+    this.currentEvent?.eventUsers?.forEach(user => {
+      if(user.username == this.currentUser?.username) return;
+      eventUsernames.push(user.username);
+    })
+    return eventUsernames;
+  }
+
+  changeUserParticipation(username: string){
+    const newUserForEvent = this.getUserByUsername(username);
+    if(!this.currentEvent || !newUserForEvent){
+      console.error("Something wen't wrong: EventDetails::277");
+    }
+    if(!this.currentEvent?.eventUsers?.find(user => user.username == newUserForEvent?.username)){
+      this.currentEvent!.eventUsers?.push(newUserForEvent!);
+    }
+    else {
+      for(let i = 0; i < this.currentEvent.eventUsers.length; i++){
+        var user = this.currentEvent.eventUsers[i];
+        if(user.username == newUserForEvent?.username){
+          this.currentEvent.eventUsers.splice(i, 1);
+        }
+      }
+    }
+  }
+
+  getUserByUsername(username: string): User | undefined {
+    return this.allUsers?.find(user => user.username == username)
   }
 }

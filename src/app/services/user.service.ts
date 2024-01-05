@@ -25,7 +25,7 @@ export class UserService {
   }
 
   public getUsers(): Observable<any> {
-    return this.httpClient.get(this.baseUrl + "/all").pipe();
+    return this.httpClient.get(this.baseUrl + "/allForEvent").pipe();
   }
 
   public saveUserSettings(userSettings: UserSettings){

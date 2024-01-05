@@ -198,8 +198,9 @@
       input {
         margin-right: 10px;
       }
-      #event-date-time-input{
-        max-width: 70px;
+      #event-date-day-input{
+        max-width: 150px;
+        padding: 0 20px;
       }
       #event-date-time-select{
         max-width: min-content;
@@ -211,6 +212,10 @@
     #event-duration-select{
       max-width: fit-content;
       padding-left: 17px;
+    }
+
+    .event-users{
+      max-width: 500px;
     }
   }
 
@@ -288,6 +293,10 @@
     .event-header{
       border-radius: 0;
     }
+  }
+
+  .event-users{
+    max-width: calc(100% - 50px) !important;
   }
 
 }
