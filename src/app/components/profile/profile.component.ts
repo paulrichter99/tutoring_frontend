@@ -1,11 +1,11 @@
-import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { User } from 'src/app/interface/user';
 import { UserSettings } from 'src/app/interface/userSettings';
 import { StorageService } from 'src/app/services/storage.service';
 import { UserService } from 'src/app/services/user.service';
-import { BASE_PROFILE_PATH, BASE_URL } from 'src/app/variables/variables';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -18,7 +18,7 @@ export class ProfileComponent implements OnInit{
   user: User | null = null;
   currentSettingShown: string = "personal";
 
-  baseProfilePath = BASE_PROFILE_PATH;
+  baseProfilePath = environment.profilePath;
 
   constructor(
     private storageService: StorageService,
@@ -92,7 +92,7 @@ export class ProfileComponent implements OnInit{
         saveTextElement.innerText = "Erfolgreich gespeichert!";
         saveTextElement.style.color = "#476930"
       },
-      error: e => {
+      error: (e) => {
         console.error(e)
         var saveTextElement = document.getElementById('save-text') as HTMLElement;
         saveTextElement.hidden = false;
@@ -117,12 +117,12 @@ export class ProfileComponent implements OnInit{
     if (files.length > 0) {
       const _file = files[0]
       this.userService.uploadProfilePicture(_file).subscribe({
-        next: data => {
+        next: (data) => {
           this.user = data as User;
           this.storageService.saveUserData(this.user);
           window.location.reload();
         },
-        error: e => {
+        error: (e) => {
           console.error("Image could not be uploaded")
         }
       });

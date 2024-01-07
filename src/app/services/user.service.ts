@@ -2,15 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoginRequest, User } from '../interface/user';
-import { BASE_URL } from '../variables/variables';
 import { UserSettings } from '../interface/userSettings';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  public baseUrl = BASE_URL + "/user";
+  public baseUrl = environment.apiUrl + "/user";
 
   constructor(private httpClient: HttpClient) { }
 

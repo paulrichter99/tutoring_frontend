@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CalendarDay, CalendarEvent } from '../interface/calendar';
-import { BASE_URL, LOGGING } from '../variables/variables';
+import { LOGGING } from '../variables/variables';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarEventService {
 
-  public baseUrl = BASE_URL;
+  public baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {
 

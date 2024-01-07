@@ -29,11 +29,7 @@ export const MONTHS_SHORT = [
 
 export const WEEK_DAYS =  ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
-export const BASE_URL = "http://192.168.178.28:8085/api";
-
 export const HEADER_HEIGHT = 100;
 export const HEADER_HEIGHT_MOBILE = 50;
 
 export const LOGGING = false;
-
-export const BASE_PROFILE_PATH = "http://192.168.178.28:8085/uploads/profilePicture/"
