@@ -39,6 +39,7 @@
                   && !(hourPerDay.event.isAnonymousEvent)"
                   style="height: 1rem; overflow: hidden; line-height: 1rem;"
             >
+              <i *ngIf="hourPerDay.event.eventUsers && hourPerDay.event.eventUsers!.length <= 1" class="fa-solid fa-lock"> </i>
               {{hourPerDay.event.eventName}}
               <div>
                 &nbsp; | &nbsp; {{calendarService.calculateTime(hourPerDay.event.eventDate.dateTime, 0)}} Uhr -

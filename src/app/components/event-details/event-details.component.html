@@ -32,7 +32,7 @@
           </select>
         </div>
         <div class="event-users" *ngIf="this.currentUser?.isTutor">
-          <multi-select class="user-select"
+          <multi-select class="user-select" id="user-select"
             [options]="possibleUsernames"
             [currentValues]="getCurrentEventUsernames()"
             (changeSelectArray)="changeUserParticipation($event)"> </multi-select>
@@ -55,6 +55,7 @@
       </select>
     </div>
     -->
+    <!--
     <div class="event-place">
       <label> <i class="fi fi-rs-marker"></i> </label>
       <select
@@ -65,12 +66,13 @@
         <option value="home"> Zuhause </option>
       </select>
     </div>
+    -->
 
     <div *ngIf="!this.currentEvent.id" class="event-private"
       title="Private Termine zeigen Tutoren, dass du in diesem Slot nicht verfügbar bist (Bereits blockiert).
       Wenn diese Option nicht ausgewählt ist, erstellst du automatisch einen Nachhilfetermin!">
       <label> <i class="fi fi-rr-lock"></i> </label>
-      <input type="checkbox" id="event-private-input">
+      <input type="checkbox" id="event-private-input" [(ngModel)]="privateEventIsChecked" (change)="setIsPrivate(privateEventIsChecked)">
     </div>
 
     <div class="event-error">

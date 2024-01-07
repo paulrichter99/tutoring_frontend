@@ -120,18 +120,29 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
       this.currentCalendarDay!,
       this.currentEvent!
     )
+
+    if(this.currentEvent?.eventUsers && this.currentEvent.eventUsers.length <= 1){
+      matchingRules = true;
+      tempMatchingRules = true;
+    }
+
     if(!tempMatchingRules){
-      this.errorMessage = "The anticipated day is already occupied by another event!"
+      this.errorMessage = "The anticipated date is already occupied by another event!"
       this.setElementNotMatchingRules(
         "EventTime",
         Array.of(eventDateTimeSelectElement),
-        "The anticipated day is already occupied by another event!"
+        "The anticipated date is already occupied by another event!"
       )
     }
     if(matchingRules && !tempMatchingRules) matchingRules = false;
 
     // keep in mind that data is processed and validated in the backend a second time
     if(!matchingRules) return;
+
+    if(this.privateEventIsChecked)
+      this.currentEvent!.eventUsers = [];
+
+    console.log(this.currentEvent?.eventUsers)
 
     const oldEventCopy = JSON.stringify(this.currentEvent!)
     var updatedEvent: CalendarEvent = JSON.parse(oldEventCopy);
@@ -294,5 +305,15 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
 
   getUserByUsername(username: string): User | undefined {
     return this.allUsers?.find(user => user.username == username)
+  }
+
+  privateEventIsChecked: boolean = false;
+
+  setIsPrivate(value: boolean){
+    var userSelect = document.getElementById("user-select") as HTMLElement
+    if(value) {
+      userSelect.hidden = true;
+    }
+    else userSelect.hidden = false
   }
 }

@@ -202,6 +202,10 @@
   }
 }
 
+.disabled {
+  color: rgba($color: $base-color-darker, $alpha: 0.3) !important;
+}
+
 
 @media (max-width: 950px){
   .cards-wrapper{
