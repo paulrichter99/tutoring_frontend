@@ -36,8 +36,6 @@ export class UserService {
     var formData: FormData = new FormData();
     formData.append('file', file);
 
-    console.log(formData.get('file'))
-
     return this.httpClient.post(this.baseUrl + "/profilePicture" , formData).pipe();
   }
 }
