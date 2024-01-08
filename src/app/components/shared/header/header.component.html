@@ -26,12 +26,12 @@
   <ul class="dropdown" #dropdown [class.user-present]="this.user">
     <li class="nav-item">
       <button class="nav-dropdown-btn" (click)="performDropdownClick()">
-        <img [src]="this.baseProfilePath + this.user?.username + '.png'">
+        <img *ngIf="this.user" [src]="this.baseProfilePath + this.user.username + '.png'">
       </button>
       <div class="dropdown-content" #dropdownContent>
-        <div class="dropdown-greeting">
-          <img id="profile-picture" [src]="this.baseProfilePath + this.user?.username + '.png'">
-           Hallo, {{this.user?.firstName ? this.user!.firstName! : this.user?.username}}!
+        <div *ngIf="this.user" class="dropdown-greeting">
+          <img id="profile-picture" [src]="this.baseProfilePath + this.user.username + '.png'">
+           Hallo, {{this.user.firstName ? this.user!.firstName! : this.user.username}}!
         </div>
         <div class="dropdown-menu-list">
           <a routerLink="/profile" routerLinkActive="active" (click)="hideFixedMenu()">
