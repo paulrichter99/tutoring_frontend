@@ -142,8 +142,6 @@ export class EventDetailsComponent implements AfterViewInit, OnInit{
     if(this.privateEventIsChecked)
       this.currentEvent!.eventUsers = [];
 
-    console.log(this.currentEvent?.eventUsers)
-
     const oldEventCopy = JSON.stringify(this.currentEvent!)
     var updatedEvent: CalendarEvent = JSON.parse(oldEventCopy);
     //set event values according to rules

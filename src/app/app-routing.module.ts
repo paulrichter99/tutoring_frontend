@@ -6,7 +6,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
-  { path: "", component: HomeComponent, data: { animation: "1"}},
+  { path: "", pathMatch: 'full', redirectTo:"home", data: { animation: "1"}},
   { path: "home", component: HomeComponent , data: { animation: "1"}},
   { path: "calendar", component: CalendarComponent, data: { animation: "2"}},
   { path: "about", component: AboutComponent , data: { animation: "3"}},
