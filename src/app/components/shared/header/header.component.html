@@ -14,7 +14,7 @@
             <a routerLink="/calendar" routerLinkActive="active">Kalender</a>
           </li>
           <li class="nav-item">
-            <a routerLink="/about" routerLinkActive="active">Über uns</a>
+            <a routerLink="/about" routerLinkActive="active">Über mich</a>
           </li>
         </ul>
       </div>
@@ -27,6 +27,7 @@
     <li class="nav-item">
       <button class="nav-dropdown-btn" (click)="performDropdownClick()">
         <img *ngIf="this.user" [src]="this.baseProfilePath + this.user.username + '.png'">
+        <i *ngIf="this.user == null" class="fa-solid fa-bars"> </i>
       </button>
       <div class="dropdown-content" #dropdownContent>
         <div *ngIf="this.user" class="dropdown-greeting">
